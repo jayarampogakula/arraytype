@@ -24,3 +24,8 @@ Thumbs.db
 .env.hostinger
 *.txt
 *.log
+package.json
+package-lock.json
+vite.config.js
+postcss.config.js
+tailwind.config.js
