@@ -18,26 +18,28 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withSchedule(function (\Illuminate\Console\Scheduling\Schedule $schedule) {
-        $status = \App\Models\BotSetting::get('bot_status', 'enabled');
-        if ($status === 'enabled') {
-            $interval = \App\Models\BotSetting::get('bot_interval', 'hourly');
+        if (\Illuminate\Support\Facades\Schema::hasTable('bot_settings')) {
+            $status = \App\Models\BotSetting::get('bot_status', 'enabled');
+            if ($status === 'enabled') {
+                $interval = \App\Models\BotSetting::get('bot_interval', 'hourly');
 
-            switch ($interval) {
-                case '30min':
-                    $schedule->command('bots:generate-activity')->everyThirtyMinutes();
-                    break;
-                case 'hourly':
-                    $schedule->command('bots:generate-activity')->hourly();
-                    break;
-                case '4hours':
-                    $schedule->command('bots:generate-activity')->everyFourHours();
-                    break;
-                case 'twice_daily':
-                    $schedule->command('bots:generate-activity')->twiceDaily(1, 13);
-                    break;
-                case 'daily':
-                    $schedule->command('bots:generate-activity')->daily();
-                    break;
+                switch ($interval) {
+                    case '30min':
+                        $schedule->command('bots:generate-activity')->everyThirtyMinutes();
+                        break;
+                    case 'hourly':
+                        $schedule->command('bots:generate-activity')->hourly();
+                        break;
+                    case '4hours':
+                        $schedule->command('bots:generate-activity')->everyFourHours();
+                        break;
+                    case 'twice_daily':
+                        $schedule->command('bots:generate-activity')->twiceDaily(1, 13);
+                        break;
+                    case 'daily':
+                        $schedule->command('bots:generate-activity')->daily();
+                        break;
+                }
             }
         }
     })
