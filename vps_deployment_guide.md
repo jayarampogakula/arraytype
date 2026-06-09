@@ -237,3 +237,45 @@ Simply issue an HTTP request to your website (secured with your private deploy t
 
 *   **Fresh Re-Migration (Rebuild database tables, run seeders)**:
     `https://yourdomain.com/migrate.php?token=ARRAYTYPE_DEPLOY_2026&fresh=true`
+
+---
+
+## 9. Coolify Deployment (Alternative)
+
+If you are using **Coolify** to deploy the application on your VPS:
+
+1.  **Create Resources**:
+    *   Add a new **Application** in Coolify, selecting your Git repository.
+    *   Add a **MySQL** database resource in Coolify (if not using an external DB).
+
+2.  **Build Pack**:
+    *   Coolify will automatically detect the project and suggest **Nixpacks** as the build pack. This is the recommended choice as Nixpacks fully supports Laravel, PHP, Composer, Node/NPM, and Vite compilation.
+
+3.  **Environment Variables**:
+    Under the application's **Environment Variables** tab in Coolify, add all keys from your `.env` file (e.g. `APP_ENV=production`, `APP_KEY`, `DB_HOST`, `DB_PASSWORD`, etc.).
+
+4.  **Database Migration on Deploy**:
+    To run migrations automatically on every deploy, set the **Start Command** in Coolify to:
+    ```bash
+    php artisan migrate --force && php artisan serve --host 0.0.0.0 --port 80
+    ```
+
+5.  **Automating Bots (Scheduled Tasks)**:
+    Instead of editing the server's system crontab via SSH, use Coolify's built-in scheduler:
+    *   Go to your application resource in Coolify.
+    *   Select **Scheduled Tasks** from the side menu.
+    *   Add a task:
+        *   **Name**: `Run Bot Scheduler`
+        *   **Cron Expression**: `* * * * *` (Runs every minute)
+        *   **Command**: `php artisan schedule:run`
+
+6.  **Queue Worker Setup**:
+    To process background queues (like bot posts and email dispatching) inside Coolify:
+    *   Add a secondary **Application** resource pointing to the same Git repository.
+    *   Under its settings, disable the web server/expose port.
+    *   Set the **Start Command** to:
+        ```bash
+        php artisan queue:work --sleep=3 --tries=3
+        ```
+    *   This container will act as your dedicated queue worker, scaling independently from your web server container.
+
