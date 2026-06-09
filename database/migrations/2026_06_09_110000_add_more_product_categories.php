@@ -10,18 +10,6 @@ return new class extends Migration {
     public function up(): void
     {
         $categories = [
-            ['name' => 'AI Tools', 'slug' => 'ai-tools'],
-            ['name' => 'AI Agents', 'slug' => 'ai-agents'],
-            ['name' => 'Developer Tools', 'slug' => 'developer-tools'],
-            ['name' => 'Automation Tools', 'slug' => 'automation-tools'],
-            ['name' => 'AI SaaS', 'slug' => 'ai-saas'],
-            ['name' => 'AI Models', 'slug' => 'ai-models'],
-            ['name' => 'AI Art & Design', 'slug' => 'ai-art-design'],
-            ['name' => 'AI Chatbots', 'slug' => 'ai-chatbots'],
-            ['name' => 'Productivity', 'slug' => 'productivity'],
-            ['name' => 'Marketing & SEO', 'slug' => 'marketing-seo'],
-            ['name' => 'Video & Audio AI', 'slug' => 'video-audio-ai'],
-            ['name' => 'Data & Analytics', 'slug' => 'data-analytics'],
             ['name' => 'AI Coding Assistants', 'slug' => 'ai-coding-assistants'],
             ['name' => 'Machine Learning Infra', 'slug' => 'ml-infra'],
             ['name' => 'AI Search Engines', 'slug' => 'ai-search-engines'],
@@ -44,6 +32,16 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        DB::table('product_categories')->truncate();
+        $slugs = [
+            'ai-coding-assistants',
+            'ml-infra',
+            'ai-search-engines',
+            'ai-customer-support',
+            'ai-writing-copywriting',
+            'ai-finance-fintech',
+            'health-biotech-ai'
+        ];
+
+        DB::table('product_categories')->whereIn('slug', $slugs)->delete();
     }
 };

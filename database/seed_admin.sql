@@ -1,12 +1,12 @@
--- Admin user seed for AIans
+-- Admin user seed for ArrayType
 SET @now = NOW();
 INSERT INTO users (name, email, password, is_admin, email_verified_at, created_at, updated_at) 
-VALUES ('AIans Admin', 'admin@aians.in', '$2y$12$N7n4Zy6ORFEFGLJh8MztQbateTQ8DSlF9RaYqWUvwM', 1, NOW(), NOW(), NOW());
+VALUES ('ArrayType Admin', 'admin@arraytype.com', '$2y$12$N7n4Zy6ORFEFGLJh8MztQbateTQ8DSlF9RaYqWUvwM', 1, NOW(), NOW(), NOW());
 
 SET @admin_id = LAST_INSERT_ID();
 
 INSERT INTO profiles (user_id, bio, skills, created_at, updated_at)
-VALUES (@admin_id, 'Platform administrator for AIans.in', 'AI, Machine Learning, Platform Management', NOW(), NOW());
+VALUES (@admin_id, 'Platform administrator for ArrayType', 'AI, Machine Learning, Platform Management', NOW(), NOW());
 
 INSERT INTO `groups` (name, description, created_by, created_at, updated_at) VALUES
 ('AI Agents', 'Community for building and deploying AI autonomous agents.', @admin_id, NOW(), NOW()),
@@ -36,8 +36,8 @@ INSERT INTO news (title, url, source, user_id, created_at, updated_at) VALUES
 ('Microsoft integrates AI copilot into all Office products', 'https://microsoft.com/copilot', 'Microsoft Blog', @admin_id, NOW(), NOW());
 
 INSERT INTO posts (user_id, content, type, created_at, updated_at)
-VALUES (@admin_id, 'Welcome to AIans — Where AI Minds Connect! 🤖
+VALUES (@admin_id, 'Welcome to ArrayType — Where AI Minds Connect! 🤖
 
 This is the central hub for all things AI. Share your discoveries, prompts, code and news with fellow builders. Together we push the frontier of AI forward. 
 
-Start by following other enthusiasts and joining communities you care about! #AIans #AI #MachineLearning', 'text', NOW(), NOW());
+Start by following other enthusiasts and joining communities you care about! #ArrayType #AI #MachineLearning', 'text', NOW(), NOW());

@@ -12,9 +12,9 @@ $now = now()->toDateTimeString();
 
 // Create Admin User
 $userId = DB::table('users')->insertGetId([
-    'name' => 'AIans Admin',
-    'email' => 'admin@aians.in',
-    'password' => Hash::make('Ai@ns#2026!Secure'),
+    'name' => 'ArrayType Admin',
+    'email' => 'admin@arraytype.com',
+    'password' => Hash::make('ArrayType#2026!Secure'),
     'is_admin' => 1,
     'email_verified_at' => $now,
     'created_at' => $now,
@@ -24,7 +24,7 @@ $userId = DB::table('users')->insertGetId([
 // Create Profile for Admin
 DB::table('profiles')->insert([
     'user_id' => $userId,
-    'bio' => 'Platform administrator for AIans.in — Where AI Minds Connect.',
+    'bio' => 'Platform administrator for ArrayType — Where AI Minds Connect.',
     'skills' => 'AI, Machine Learning, Platform Management',
     'created_at' => $now,
     'updated_at' => $now,
@@ -76,14 +76,14 @@ DB::table('job_listings')->insert([
 // Seed a welcome feed post
 DB::table('posts')->insert([
     'user_id' => $userId,
-    'content' => "Welcome to AIans — Where AI Minds Connect! 🤖\n\nThis is the central hub for all things AI. Share your discoveries, prompts, code and news with fellow builders. Together we push the frontier of AI forward.",
+    'content' => "Welcome to ArrayType — Where AI Minds Connect! 🤖\n\nThis is the central hub for all things AI. Share your discoveries, prompts, code and news with fellow builders. Together we push the frontier of AI forward.",
     'type' => 'text',
     'created_at' => $now,
     'updated_at' => $now,
 ]);
 
 echo "\n✅ Admin user created successfully!\n";
-echo "   Email    : admin@aians.in\n";
-echo "   Password : Ai@ns#2026!Secure\n";
+echo "   Email    : admin@arraytype.com\n";
+echo "   Password : ArrayType#2026!Secure\n";
 echo "   Admin ID : $userId\n\n";
 echo "✅ Seed data created: Groups, News, Tools, Jobs, and Welcome Post\n";

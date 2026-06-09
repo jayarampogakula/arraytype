@@ -1,4 +1,4 @@
--- AIans Complete Database Setup Script for XAMPP MySQL
+-- ArrayType Complete Database Setup Script for XAMPP MySQL
 -- Run this directly in phpMyAdmin or MySQL CLI
 
 SET FOREIGN_KEY_CHECKS = 0;

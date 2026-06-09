@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AIans Robust One-Click Deployment Script
+ * ArrayType Robust One-Click Deployment Script
  * 
  * Usage: domain.com/deploy.php?token=YOUR_TOKEN
  */
@@ -33,7 +33,7 @@ if ($urlToken !== $envToken) {
     die("Unauthorized access.");
 }
 
-echo "<h1>AIans Deployment System</h1>";
+echo "<h1>ArrayType Deployment System</h1>";
 echo "<pre>";
 
 function runCommand($command)

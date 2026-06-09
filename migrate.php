@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AIans Standalone Migration Script
+ * ArrayType Standalone Migration Script
  * 
  * Usage: domain.com/migrate.php?token=YOUR_TOKEN
  */
@@ -32,7 +32,7 @@ $urlToken = $_GET['token'] ?? '';
 if (empty($envToken)) {
     echo "<h1>Error: DEPLOY_TOKEN not found</h1>";
     echo "<p>Please ensure your <code>.env</code> file is uploaded to the root directory and contains:</p>";
-    echo "<pre>DEPLOY_TOKEN=\"AIANS_DEPLOY_2026\"</pre>";
+    echo "<pre>DEPLOY_TOKEN=\"ARRAYTYPE_DEPLOY_2026\"</pre>";
     exit;
 }
 
@@ -42,7 +42,7 @@ if ($urlToken !== $envToken) {
 }
 
 // 4. Run Migration
-echo "<h1>AIans Migration Utility</h1>";
+echo "<h1>ArrayType Migration Utility</h1>";
 echo "<pre>";
 
 $isFresh = isset($_GET['fresh']) && $_GET['fresh'] == 'true';

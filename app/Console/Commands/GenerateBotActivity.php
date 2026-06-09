@@ -45,6 +45,9 @@ class GenerateBotActivity extends Command
             case 'send_connections':
                 $this->generateConnectionActivity($bot);
                 break;
+            case 'list_products':
+                $this->generateProductActivity($bot);
+                break;
             case 'post_content':
             default:
                 $this->generateContentActivity($bot);
@@ -215,5 +218,132 @@ class GenerateBotActivity extends Command
         ]);
 
         $this->info("Bot {$bot->name} sent connection request to {$candidate->name} (Status: {$status})");
+    }
+
+    protected function generateProductActivity($bot)
+    {
+        $productsList = [
+            [
+                'name' => 'ChatGPT',
+                'tagline' => 'Your conversational AI assistant by OpenAI',
+                'description' => 'A state-of-the-art conversational AI system by OpenAI designed for answering questions, drafting content, explaining concepts, and writing software code.',
+                'website_url' => 'https://chatgpt.com',
+                'category_slug' => 'ai-chatbots',
+                'logo' => 'https://images.unsplash.com/photo-1678269137974-b58602b9e6fa?q=80&w=200&auto=format&fit=crop'
+            ],
+            [
+                'name' => 'Claude',
+                'tagline' => 'Helpful, harmless, and honest AI assistant by Anthropic',
+                'description' => 'Anthropic\'s advanced AI chatbot that excels at deep reasoning, coding assistance, mathematical logic, and processing large volumes of textual documentation.',
+                'website_url' => 'https://claude.ai',
+                'category_slug' => 'ai-chatbots',
+                'logo' => 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=200&auto=format&fit=crop'
+            ],
+            [
+                'name' => 'Gemini',
+                'tagline' => 'Next-generation multimodal AI by Google',
+                'description' => 'Google\'s conversational assistant integrated with Google Search. It excels at drawing insights across text, code, images, audio, and video formats.',
+                'website_url' => 'https://gemini.google.com',
+                'category_slug' => 'ai-chatbots',
+                'logo' => 'https://images.unsplash.com/photo-1707343843437-caacff5cfa74?q=80&w=200&auto=format&fit=crop'
+            ],
+            [
+                'name' => 'Cursor',
+                'tagline' => 'The AI-first code editor for rapid development',
+                'description' => 'An AI-powered fork of VS Code built to help developers write and edit code faster with built-in chat, inline generation, codebase indexing, and multi-file editing.',
+                'website_url' => 'https://cursor.com',
+                'category_slug' => 'ai-coding-assistants',
+                'logo' => 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=200&auto=format&fit=crop'
+            ],
+            [
+                'name' => 'v0 by Vercel',
+                'tagline' => 'Generative UI system for frontend developers',
+                'description' => 'An AI companion by Vercel that turns natural language descriptions into ready-to-use React, Tailwind CSS, and HTML component code in real-time.',
+                'website_url' => 'https://v0.dev',
+                'category_slug' => 'developer-tools',
+                'logo' => 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=200&auto=format&fit=crop'
+            ],
+            [
+                'name' => 'ElevenLabs',
+                'tagline' => 'State-of-the-art text-to-speech and voice cloning AI',
+                'description' => 'A leading generative audio platform designed for generating ultra-realistic voiceovers, synthetic sound effects, and lifelike multi-language text-to-speech.',
+                'website_url' => 'https://elevenlabs.io',
+                'category_slug' => 'video-audio-ai',
+                'logo' => 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?q=80&w=200&auto=format&fit=crop'
+            ],
+            [
+                'name' => 'Midjourney',
+                'tagline' => 'High-quality generative text-to-image art creator',
+                'description' => 'An independent research lab focusing on creative expression, providing an AI image generator capable of creating stunning artistic and photorealistic graphics from prompts.',
+                'website_url' => 'https://midjourney.com',
+                'category_slug' => 'ai-art-design',
+                'logo' => 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=200&auto=format&fit=crop'
+            ],
+            [
+                'name' => 'Stable Diffusion',
+                'tagline' => 'Open source text-to-image generator',
+                'description' => 'Stability AI\'s open-source generative model that produces high-resolution images, artworks, and digital assets from natural language descriptions.',
+                'website_url' => 'https://stability.ai',
+                'category_slug' => 'ai-art-design',
+                'logo' => 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=200&auto=format&fit=crop'
+            ],
+            [
+                'name' => 'Perplexity AI',
+                'tagline' => 'Conversational search engine with direct source citations',
+                'description' => 'An AI-powered search tool that delivers direct, natural language answers to queries, backed by real-time web indexing and verifiable source links.',
+                'website_url' => 'https://perplexity.ai',
+                'category_slug' => 'ai-search-engines',
+                'logo' => 'https://images.unsplash.com/photo-1546074177-3df148018967?q=80&w=200&auto=format&fit=crop'
+            ],
+            [
+                'name' => 'DeepSeek V3',
+                'tagline' => 'Advanced open-source reasoning and language model',
+                'description' => 'An extremely capable open-source language model developed by DeepSeek, offering state-of-the-art programming, math, logic, and reasoning capabilities.',
+                'website_url' => 'https://deepseek.com',
+                'category_slug' => 'ai-models',
+                'logo' => 'https://images.unsplash.com/photo-1614741118887-7a4ee193a5fa?q=80&w=200&auto=format&fit=crop'
+            ],
+            [
+                'name' => 'Make.com',
+                'tagline' => 'Visual workflow automation platform',
+                'description' => 'A powerful system to design, build, and automate complex workflows. Connect apps, tools, and custom AI agents together visually without writing code.',
+                'website_url' => 'https://make.com',
+                'category_slug' => 'automation-tools',
+                'logo' => 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=200&auto=format&fit=crop'
+            ]
+        ];
+
+        // Filter out products that have already been listed to avoid duplicate spamming
+        $existingNames = \App\Models\Product::pluck('name')->map(fn($n) => strtolower(trim($n)))->toArray();
+        $availableProducts = array_filter($productsList, function($p) use ($existingNames) {
+            return !in_array(strtolower(trim($p['name'])), $existingNames);
+        });
+
+        // If all curated products are already listed, reset list to post again
+        if (empty($availableProducts)) {
+            $availableProducts = $productsList;
+        }
+
+        $productData = $availableProducts[array_rand($availableProducts)];
+
+        // Find Category
+        $category = \App\Models\ProductCategory::where('slug', $productData['category_slug'])->first();
+
+        // If category is not seeded yet, fall back to first category
+        $categoryId = $category ? $category->id : 1;
+
+        \App\Models\Product::create([
+            'user_id' => $bot->id,
+            'category_id' => $categoryId,
+            'name' => $productData['name'],
+            'logo' => $productData['logo'],
+            'tagline' => $productData['tagline'],
+            'description' => $productData['description'],
+            'website_url' => $productData['website_url'],
+            'status' => 'approved',
+            'launch_date' => now()->toDateString(),
+        ]);
+
+        $this->info("Bot {$bot->name} listed a new AI product: '{$productData['name']}' under category ID {$categoryId}!");
     }
 }

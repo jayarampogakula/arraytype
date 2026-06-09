@@ -48,7 +48,7 @@ class BotController extends Controller
             'name' => 'required|string|max:255',
             'profession' => 'required|string|max:255',
             'bio' => 'nullable|string|max:1000',
-            'bot_task' => 'required|in:post_content,post_news,create_groups,send_connections'
+            'bot_task' => 'required|in:post_content,post_news,create_groups,send_connections,list_products'
         ]);
 
         $baseEmail = strtolower(Str::slug($request->input('name'))) . '@arraytype.local';
@@ -80,7 +80,7 @@ class BotController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'bot_task' => 'required|in:post_content,post_news,create_groups,send_connections'
+            'bot_task' => 'required|in:post_content,post_news,create_groups,send_connections,list_products'
         ]);
 
         // Ensure we are only updating a bot account
@@ -112,15 +112,31 @@ class BotController extends Controller
         $url = $request->input('url');
 
         try {
-            // Simple fetch - in a real app you'd use a better HTTP client and handle timeouts
-            $html = file_get_contents($url);
+            // Use cURL for a robust HTTP request
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36');
+            curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+            
+            $html = curl_exec($ch);
+            $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $curlError = curl_error($ch);
+            curl_close($ch);
 
-            if (!$html) {
-                return back()->with('error', 'Could not fetch the URL content.');
+            if ($html === false) {
+                return back()->with('error', 'Could not fetch the URL: ' . $curlError);
+            }
+
+            if ($statusCode !== 200) {
+                return back()->with('error', 'Could not fetch the URL content (HTTP Status Code: ' . $statusCode . ').');
             }
 
             $doc = new \DOMDocument();
-            @$doc->loadHTML($html);
+            @$doc->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
 
             $title = '';
             $description = '';
@@ -169,24 +185,24 @@ class BotController extends Controller
                 \App\Models\Product::create([
                     'user_id' => $bot->id,
                     'category_id' => 1, // Default fallback category (e.g. AI Tools)
-                    'name' => mb_substr($title, 0, 255),
-                    'tagline' => mb_substr($description, 0, 255),
-                    'description' => mb_substr($description, 0, 1000) . "\n\nLink: " . $url,
+                    'name' => mb_substr(trim($title), 0, 255),
+                    'tagline' => mb_substr(trim($description), 0, 255),
+                    'description' => mb_substr(trim($description), 0, 1000) . "\n\nLink: " . $url,
                     'website_url' => $url,
                     'status' => 'approved',
                 ]);
             } elseif ($request->input('type') === 'tool') {
                 \App\Models\Tool::create([
                     'user_id' => $bot->id,
-                    'name' => mb_substr($title, 0, 255),
-                    'description' => mb_substr($description, 0, 1000) . "\n\nLink: " . $url,
+                    'name' => mb_substr(trim($title), 0, 255),
+                    'description' => mb_substr(trim($description), 0, 1000) . "\n\nLink: " . $url,
                     'url' => $url,
                 ]);
             } elseif ($request->input('type') === 'news') {
                 \App\Models\News::create([
                     'user_id' => $bot->id,
-                    'title' => mb_substr($title, 0, 255),
-                    'summary' => mb_substr($description, 0, 1000),
+                    'title' => mb_substr(trim($title), 0, 255),
+                    'summary' => mb_substr(trim($description), 0, 1000),
                     'content' => "Check out the full story here: " . $url,
                     'source_url' => $url,
                     'status' => 'approved',

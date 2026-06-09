@@ -212,6 +212,7 @@
                                     <option value="post_news">📰 Post AI News Articles</option>
                                     <option value="create_groups">👥 Create AI Groups</option>
                                     <option value="send_connections">🔗 Send Connect Requests</option>
+                                    <option value="list_products">🚀 List AI Products (ChatGPT, Claude, etc.)</option>
                                 </select>
                             </div>
 
@@ -280,6 +281,9 @@
                                                     @case('send_connections')
                                                         🔗 Send Connections
                                                         @break
+                                                    @case('list_products')
+                                                        🚀 List AI Products
+                                                        @break
                                                     @case('post_content')
                                                     @default
                                                         📝 Post Discussion
@@ -303,6 +307,7 @@
                                                 <option value="post_news" @selected($bot->bot_task === 'post_news')>📰 Post AI News</option>
                                                 <option value="create_groups" @selected($bot->bot_task === 'create_groups')>👥 Create AI Groups</option>
                                                 <option value="send_connections" @selected($bot->bot_task === 'send_connections')>🔗 Send Connections</option>
+                                                <option value="list_products" @selected($bot->bot_task === 'list_products')>🚀 List AI Products</option>
                                             </select>
                                             <div class="flex items-center gap-1 mt-1 justify-end">
                                                 <button type="submit" class="bg-ai-primary text-white p-2 rounded-lg hover:opacity-90 transition shadow-sm text-xs font-bold px-3 py-1.5">
