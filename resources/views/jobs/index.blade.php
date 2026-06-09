@@ -963,7 +963,7 @@
                         </div>
 
                         <!-- Form -->
-                        <form :action="'/jobs/' + applyJobId + '/apply'" method="POST" id="quick-apply-form" class="space-y-4">
+                        <form :action="'{{ url('/jobs') }}/' + applyJobId + '/apply'" method="POST" id="quick-apply-form" class="space-y-4">
                             @csrf
                             <div class="space-y-2">
                                 <label class="block text-xs font-bold text-gray-600 dark:text-gray-400 uppercase">Message to Employer (Optional)</label>
