@@ -2,7 +2,7 @@
     <!-- Top AI News -->
     <div class="glass-panel rounded-xl bg-white dark:bg-[#1b1f23] shadow-sm border border-gray-200 dark:border-white/10 p-4">
         <div class="flex justify-between items-center mb-4">
-            <h2 class="text-base font-bold text-gray-900 dark:text-gray-100">AIans News</h2>
+            <h2 class="text-base font-bold text-gray-900 dark:text-gray-100">ArrayType News</h2>
             <svg class="h-4 w-4 text-gray-500 cursor-pointer" fill="currentColor" viewBox="0 0 20 20" title="These are the top trending news stories on the platform">
                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
             </svg>

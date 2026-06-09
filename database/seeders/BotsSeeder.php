@@ -47,11 +47,13 @@ class BotsSeeder extends Seeder
         $botIds = [];
 
         foreach ($personas as $idx => $persona) {
+            $tasks = ['post_content', 'post_news', 'create_groups', 'send_connections'];
             $user = User::create([
                 'name' => $persona['name'],
-                'email' => "bot{$idx}@aians.in",
+                'email' => "bot{$idx}@arraytype.local",
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
+                'bot_task' => $tasks[$idx % count($tasks)]
             ]);
 
             $botIds[] = $user->id;
@@ -91,6 +93,7 @@ class BotsSeeder extends Seeder
         ];
 
         foreach ($tools as $t) {
+            $t['user_id'] = $botIds[array_rand($botIds)];
             Tool::create($t);
         }
 

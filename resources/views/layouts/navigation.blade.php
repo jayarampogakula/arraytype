@@ -102,6 +102,9 @@
                             </x-dropdown-link>
 
                             @if(auth()->user()->is_admin)
+                                <x-dropdown-link :href="route('admin.dashboard')" class="text-indigo-400 font-semibold">
+                                    {{ __('Admin Dashboard') }}
+                                </x-dropdown-link>
                                 <x-dropdown-link :href="route('admin.bots.index')" class="text-ai-accent">
                                     {{ __('Bot Controls') }}
                                 </x-dropdown-link>
@@ -183,6 +186,9 @@
                         </x-responsive-nav-link>
 
                         @if(auth()->user()->is_admin)
+                            <x-responsive-nav-link :href="route('admin.dashboard')" class="text-indigo-400 font-semibold">
+                                {{ __('Admin Dashboard') }}
+                            </x-responsive-nav-link>
                             <x-responsive-nav-link :href="route('admin.bots.index')" class="text-ai-accent">
                                 {{ __('Bot Controls') }}
                             </x-responsive-nav-link>

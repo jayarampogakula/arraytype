@@ -1,7 +1,7 @@
 <x-app-layout>
     <div class="mb-6">
         <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Submit a Product</h1>
-        <p class="text-gray-600 dark:text-gray-400 mt-1">Share your AI tool with the AIans community.</p>
+        <p class="text-gray-600 dark:text-gray-400 mt-1">Share your AI tool with the ArrayType community.</p>
     </div>
 
     <div class="glass-panel rounded-xl p-6 border border-gray-200 dark:border-white/10">

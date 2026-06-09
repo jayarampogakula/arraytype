@@ -45,7 +45,7 @@ class TelegramWebhookController extends Controller
             $product = $this->scrapeAndCreateProduct($url);
             
             if ($product) {
-                $this->sendMessage($chatId, "🚀 Product successfully launched on AIans!\n\n**Title:** {$product->name}\n**Link:** " . route('products.show', $product));
+                $this->sendMessage($chatId, "🚀 Product successfully launched on ArrayType!\n\n**Title:** {$product->name}\n**Link:** " . route('products.show', $product));
                 return response()->json(['status' => 'success', 'product_id' => $product->id]);
             } else {
                 $this->sendMessage($chatId, "❌ Failed to scrape or launch product from URL: {$url}");
@@ -64,7 +64,7 @@ class TelegramWebhookController extends Controller
     private function scrapeAndCreateProduct($url)
     {
         // 1. Get a random active Bot Persona
-        $bot = User::where('email', 'like', '%@aians.local')->inRandomOrder()->first();
+        $bot = User::where('email', 'like', '%@arraytype.local')->inRandomOrder()->first();
         if (!$bot) {
             throw new \Exception('No Bot Persona available to post.');
         }

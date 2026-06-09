@@ -26,7 +26,7 @@
 </IfModule>
 
 # ============================================================
-# SECURITY HARDENING - AIans
+# SECURITY HARDENING - ArrayType
 # ============================================================
 
 # --- Block access to sensitive files ---

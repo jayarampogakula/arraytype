@@ -70,6 +70,23 @@
                 Tools
             </a>
         </div>
+
+        @if(auth()->user()->is_admin)
+            <!-- Admin Navigation -->
+            <div class="glass-panel overflow-hidden rounded-xl bg-white dark:bg-[#1b1f23] shadow-sm border border-gray-200 dark:border-white/10 py-2">
+                <div class="px-4 py-1.5 text-xs font-bold text-indigo-500 uppercase tracking-wider">
+                    Admin Tools
+                </div>
+                <a href="{{ route('admin.dashboard') }}"
+                    class="block px-4 py-2 text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 hover:underline flex items-center gap-1.5">
+                    🛡️ Dashboard
+                </a>
+                <a href="{{ route('admin.bots.index') }}"
+                    class="block px-4 py-2 text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 hover:underline flex items-center gap-1.5">
+                    🤖 Bot Persona Matrix
+                </a>
+            </div>
+        @endif
     </div>
 @else
     <div

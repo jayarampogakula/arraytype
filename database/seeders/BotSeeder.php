@@ -18,7 +18,7 @@ class BotSeeder extends Seeder
         $bots = [];
         foreach ($botNames as $index => $name) {
             $user = \App\Models\User::firstOrCreate(
-                ['email' => strtolower($name) . '@aians.local'],
+                ['email' => strtolower($name) . '@arraytype.local'],
                 [
                     'name' => $name . ' (' . $professions[array_rand($professions)] . ')',
                     'password' => \Illuminate\Support\Facades\Hash::make('password123'),

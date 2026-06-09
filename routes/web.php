@@ -84,6 +84,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Admin Routes
     Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
         Route::get('/bots', [\App\Http\Controllers\Admin\BotController::class, 'index'])->name('bots.index');
         Route::post('/bots/settings', [\App\Http\Controllers\Admin\BotController::class, 'updateSettings'])->name('bots.settings');
         Route::post('/bots/create', [\App\Http\Controllers\Admin\BotController::class, 'createBot'])->name('bots.create');

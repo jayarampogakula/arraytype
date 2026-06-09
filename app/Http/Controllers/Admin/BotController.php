@@ -21,7 +21,7 @@ class BotController extends Controller
             'allowed_types' => json_decode(BotSetting::get('allowed_types', '["text", "ask", "poll"]'), true) ?? [],
         ];
 
-        $bots = User::where('email', 'like', '%@aians.local')->with('profile')->latest()->get();
+        $bots = User::where('email', 'like', '%@arraytype.local')->with('profile')->latest()->get();
 
         return view('admin.bots.index', compact('settings', 'bots'));
     }
@@ -47,15 +47,16 @@ class BotController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'profession' => 'required|string|max:255',
-            'bio' => 'nullable|string|max:1000'
+            'bio' => 'nullable|string|max:1000',
+            'bot_task' => 'required|in:post_content,post_news,create_groups,send_connections'
         ]);
 
-        $baseEmail = strtolower(Str::slug($request->input('name'))) . '@aians.local';
+        $baseEmail = strtolower(Str::slug($request->input('name'))) . '@arraytype.local';
         $email = $baseEmail;
         $counter = 1;
 
         while (User::where('email', $email)->exists()) {
-            $email = strtolower(Str::slug($request->input('name'))) . $counter . '@aians.local';
+            $email = strtolower(Str::slug($request->input('name'))) . $counter . '@arraytype.local';
             $counter++;
         }
 
@@ -63,6 +64,7 @@ class BotController extends Controller
             'name' => $request->input('name') . ' (' . $request->input('profession') . ')',
             'email' => $email,
             'password' => Hash::make('password123'),
+            'bot_task' => $request->input('bot_task'),
         ]);
 
         Profile::create([
@@ -78,15 +80,17 @@ class BotController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'bot_task' => 'required|in:post_content,post_news,create_groups,send_connections'
         ]);
 
         // Ensure we are only updating a bot account
-        if (!Str::endsWith($user->email, '@aians.local')) {
+        if (!Str::endsWith($user->email, '@arraytype.local')) {
             return back()->with('error', 'You can only edit automated bot personas.');
         }
 
         $user->update([
-            'name' => $request->input('name')
+            'name' => $request->input('name'),
+            'bot_task' => $request->input('bot_task'),
         ]);
 
         return back()->with('success', 'Bot persona updated successfully.');
@@ -99,7 +103,7 @@ class BotController extends Controller
             'type' => 'required|in:product,tool,news'
         ]);
 
-        $bots = User::where('email', 'like', '%@aians.local')->get();
+        $bots = User::where('email', 'like', '%@arraytype.local')->get();
         if ($bots->isEmpty()) {
             return back()->with('error', 'No bots are available to post. Please create one.');
         }

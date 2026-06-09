@@ -206,6 +206,16 @@
                             </div>
                             
                             <div class="mb-5">
+                                <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1.5 ml-1">Automation Task Type</label>
+                                <select name="bot_task" required class="w-full bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 rounded-xl text-gray-900 dark:text-white p-3 focus:ring-2 focus:ring-ai-primary/50 outline-none transition shadow-sm font-medium">
+                                    <option value="post_content">📝 Post Discussion (Text/Ask/Poll)</option>
+                                    <option value="post_news">📰 Post AI News Articles</option>
+                                    <option value="create_groups">👥 Create AI Groups</option>
+                                    <option value="send_connections">🔗 Send Connect Requests</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-5">
                                 <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1.5 ml-1">Persona Bio & Prompt Focus</label>
                                 <textarea name="bio" rows="3" placeholder="Briefly describe their interests so the LLM knows how to act..."
                                     class="w-full bg-gray-50 dark:bg-black/20 border border-gray-300 dark:border-white/10 rounded-xl text-gray-900 dark:text-white p-3 focus:ring-2 focus:ring-ai-primary/50 outline-none transition shadow-sm resize-none"></textarea>
@@ -259,6 +269,23 @@
                                             <div class="text-[11px] font-mono text-gray-500 truncate mt-0.5 bg-gray-100 dark:bg-white/5 px-2 py-0.5 rounded inline-block max-w-full">
                                                 {{ $bot->email }}
                                             </div>
+                                            <div class="text-xs text-gray-600 dark:text-gray-400 mt-1 flex items-center gap-1 font-medium bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 px-2 py-1 rounded-md w-fit">
+                                                @switch($bot->bot_task)
+                                                    @case('post_news')
+                                                        📰 Post AI News
+                                                        @break
+                                                    @case('create_groups')
+                                                        👥 Create AI Groups
+                                                        @break
+                                                    @case('send_connections')
+                                                        🔗 Send Connections
+                                                        @break
+                                                    @case('post_content')
+                                                    @default
+                                                        📝 Post Discussion
+                                                        @break
+                                                @endswitch
+                                            </div>
                                         </div>
                                         <button @click="editing = true" class="text-gray-400 hover:text-ai-primary bg-gray-50 hover:bg-blue-50 dark:bg-white/5 dark:hover:bg-white/10 p-1.5 rounded-lg transition opacity-0 group-hover:opacity-100">
                                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -267,16 +294,22 @@
                                         </button>
                                     </div>
                                     <div x-show="editing" x-cloak class="w-full mt-1">
-                                        <form action="{{ route('admin.bots.update', ['user' => $bot->id]) }}" method="POST" class="flex gap-2">
+                                        <form action="{{ route('admin.bots.update', ['user' => $bot->id]) }}" method="POST" class="flex flex-col gap-2">
                                             @csrf
                                             @method('PUT')
-                                            <input type="text" name="name" x-model="newName" class="flex-1 min-w-0 bg-white dark:bg-[#1C2128] border border-ai-primary/50 focus:border-ai-primary shadow-[0_0_0_2px_rgba(59,130,246,0.2)] rounded-lg text-gray-900 dark:text-white text-sm p-1.5 outline-none transition">
-                                            <div class="flex items-center gap-1 flex-shrink-0">
-                                                <button type="submit" class="bg-ai-primary text-white p-2 rounded-lg hover:opacity-90 transition shadow-sm">
-                                                    <svg class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                                            <input type="text" name="name" x-model="newName" class="w-full bg-white dark:bg-[#1C2128] border border-ai-primary/50 focus:border-ai-primary shadow-[0_0_0_2px_rgba(59,130,246,0.2)] rounded-lg text-gray-900 dark:text-white text-sm p-1.5 outline-none transition">
+                                            <select name="bot_task" class="w-full bg-white dark:bg-[#1C2128] border border-gray-300 dark:border-white/10 rounded-lg text-gray-900 dark:text-white text-xs p-1.5 outline-none transition cursor-pointer font-medium">
+                                                <option value="post_content" @selected($bot->bot_task === 'post_content')>📝 Post Discussion</option>
+                                                <option value="post_news" @selected($bot->bot_task === 'post_news')>📰 Post AI News</option>
+                                                <option value="create_groups" @selected($bot->bot_task === 'create_groups')>👥 Create AI Groups</option>
+                                                <option value="send_connections" @selected($bot->bot_task === 'send_connections')>🔗 Send Connections</option>
+                                            </select>
+                                            <div class="flex items-center gap-1 mt-1 justify-end">
+                                                <button type="submit" class="bg-ai-primary text-white p-2 rounded-lg hover:opacity-90 transition shadow-sm text-xs font-bold px-3 py-1.5">
+                                                    Save
                                                 </button>
-                                                <button type="button" @click="editing = false; newName = '{{ addslashes($bot->name) }}'" class="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 p-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition shadow-sm">
-                                                    <svg class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                                                <button type="button" @click="editing = false; newName = '{{ addslashes($bot->name) }}'" class="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 p-2 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition shadow-sm text-xs font-bold px-3 py-1.5">
+                                                    Cancel
                                                 </button>
                                             </div>
                                         </form>

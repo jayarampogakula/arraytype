@@ -14,7 +14,7 @@ class GenerateBotActivity extends Command
      */
     protected $signature = 'bots:generate-activity';
 
-    protected $description = 'Generates random post and like activity from bot users.';
+    protected $description = 'Generates random post, news, group, or connection activity from bot users.';
 
     public function handle()
     {
@@ -24,14 +24,36 @@ class GenerateBotActivity extends Command
             return;
         }
 
-        $bots = \App\Models\User::where('email', 'like', '%@aians.local')->get();
+        $bots = \App\Models\User::where('email', 'like', '%@arraytype.local')->get();
         if ($bots->isEmpty()) {
-            $this->error('No bots found. Please run the BotSeeder first.');
+            $this->error('No bots found. Please run the BotSeeder or create one in admin.');
             return;
         }
 
         $bot = $bots->random();
+        $task = $bot->bot_task ?? 'post_content';
 
+        $this->info("Executing task '{$task}' for bot: {$bot->name}");
+
+        switch ($task) {
+            case 'post_news':
+                $this->generateNewsActivity($bot);
+                break;
+            case 'create_groups':
+                $this->generateGroupActivity($bot);
+                break;
+            case 'send_connections':
+                $this->generateConnectionActivity($bot);
+                break;
+            case 'post_content':
+            default:
+                $this->generateContentActivity($bot);
+                break;
+        }
+    }
+
+    protected function generateContentActivity($bot)
+    {
         $allowedTypesJSON = BotSetting::get('allowed_types', '["text"]');
         $allowedTypes = json_decode($allowedTypesJSON, true) ?: ['text'];
 
@@ -73,7 +95,6 @@ class GenerateBotActivity extends Command
             ]
         ];
 
-        // Make sure we have activities for the specific type
         if (!isset($activities[$type])) {
             $type = 'text';
         }
@@ -97,5 +118,102 @@ class GenerateBotActivity extends Command
         ]);
 
         $this->info("Generated a new activity post by {$bot->name}!");
+    }
+
+    protected function generateNewsActivity($bot)
+    {
+        $headlines = [
+            "Vibe-Coding is the Next Big Wave in Software Development",
+            "Vite 7 Launches with 5x Performance Improvement in Hot Reloading",
+            "OpenAI Announces GPT-5 Search Features Available Globally",
+            "Anthropic Releases Claude 4 Opus with Advanced Logic Engine",
+            "Meta Open Sources Llama 4 400B Model with Multilingual Support",
+            "Apple's On-Device Intelligence Framework Outperforms Cloud Competitors",
+            "NVIDIA Announces Next-Generation Blackwell Ultra AI Chips",
+            "Google DeepMind's AlphaFold 3 Maps Cellular Interactions",
+            "Mistral AI Launches Pixtral 12B Multimodal Model",
+            "Microsoft Introduces Copilot Agents to Automate Business Processes"
+        ];
+
+        $headline = $headlines[array_rand($headlines)];
+
+        \App\Models\News::create([
+            'user_id' => $bot->id,
+            'title' => $headline,
+            'summary' => 'This is a breaking update on the latest developments in artificial intelligence, deep learning, and vector search systems.',
+            'content' => 'In a major announcement today, industry leaders unveiled new capabilities that promise to change how developer workflows and LLM agentic pipelines are designed. The technology is rolling out to enterprise users and the developer community over the coming weeks.',
+            'source_url' => 'https://news.ycombinator.com',
+            'status' => 'approved',
+            'category' => 'Industry'
+        ]);
+
+        $this->info("Bot {$bot->name} posted a new AI news article: '{$headline}'");
+    }
+
+    protected function generateGroupActivity($bot)
+    {
+        $groups = [
+            "ArrayType Developers",
+            "Prompt Engineering Masters",
+            "Local LLM Enthusiasts",
+            "Vibe Coders Hub",
+            "AI Ethics & Alignment",
+            "Vector DBs & RAG",
+            "Stable Diffusion Art",
+            "Next-Gen AI Agents",
+            "Blackwell GPU Miners",
+            "Claude & Anthropic API"
+        ];
+
+        $groupName = $groups[array_rand($groups)];
+
+        // Avoid duplicate group names
+        if (\App\Models\Group::where('name', $groupName)->exists()) {
+            $groupName .= " " . rand(2, 99);
+        }
+
+        $group = \App\Models\Group::create([
+            'name' => $groupName,
+            'description' => 'A community group for discussing ' . $groupName . ' topics, sharing code, and networking.',
+            'created_by' => $bot->id,
+            'slug' => \Illuminate\Support\Str::slug($groupName),
+            'is_private' => false
+        ]);
+
+        \App\Models\GroupMember::create([
+            'group_id' => $group->id,
+            'user_id' => $bot->id,
+            'role' => 'moderator'
+        ]);
+
+        $this->info("Bot {$bot->name} created a new group: '{$groupName}'");
+    }
+
+    protected function generateConnectionActivity($bot)
+    {
+        // Find a user/bot who is not currently connected to this bot
+        $connectedUserIds = \App\Models\Connection::where('user_id', $bot->id)->pluck('connected_user_id')
+            ->concat(\App\Models\Connection::where('connected_user_id', $bot->id)->pluck('user_id'))
+            ->push($bot->id)
+            ->unique()
+            ->toArray();
+
+        $candidate = \App\Models\User::whereNotIn('id', $connectedUserIds)->inRandomOrder()->first();
+
+        if (!$candidate) {
+            $this->info("Bot {$bot->name} already connected to everyone.");
+            return;
+        }
+
+        // If the candidate is also a bot, auto-accept connection. Otherwise pending.
+        $status = str_ends_with($candidate->email, '@arraytype.local') ? 'accepted' : 'pending';
+
+        \App\Models\Connection::create([
+            'user_id' => $bot->id,
+            'connected_user_id' => $candidate->id,
+            'status' => $status
+        ]);
+
+        $this->info("Bot {$bot->name} sent connection request to {$candidate->name} (Status: {$status})");
     }
 }

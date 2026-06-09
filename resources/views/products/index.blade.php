@@ -33,7 +33,7 @@
                 <!-- Header -->
                 <div class="flex items-center gap-3 mb-2">
                     <div class="h-8 w-8 bg-ai-primary rounded-full flex items-center justify-center text-white font-black text-lg shadow-sm">P</div>
-                    <h1 class="text-[22px] font-bold text-gray-900 dark:text-white tracking-tight">Best of AIans <span class="text-gray-400 font-normal ml-1">| {{ $currentDate->format('F d, Y') }}</span></h1>
+                    <h1 class="text-[22px] font-bold text-gray-900 dark:text-white tracking-tight">Best of ArrayType <span class="text-gray-400 font-normal ml-1">| {{ $currentDate->format('F d, Y') }}</span></h1>
                 </div>
 
                 <!-- Tabs -->

@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
         );
 
         \App\Models\User::firstOrCreate(
-            ['email' => 'user@aians.com'],
+            ['email' => 'user@arraytype.com'],
             [
                 'name' => 'Demo User',
                 'username' => 'user',
@@ -38,7 +38,7 @@ class DatabaseSeeder extends Seeder
         );
 
         $botUser = \App\Models\User::firstOrCreate(
-            ['email' => 'bot@aians.local'],
+            ['email' => 'bot@arraytype.local'],
             [
                 'name' => 'Automated Bot (AI Assistant)',
                 'username' => 'bot',
@@ -114,5 +114,9 @@ class DatabaseSeeder extends Seeder
                 'source_url' => 'https://news.ycombinator.com',
             ]);
         }
+
+        $this->call([
+            BotsSeeder::class,
+        ]);
     }
 }

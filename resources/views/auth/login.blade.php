@@ -54,7 +54,7 @@
             <button type="button" onclick="autofill('admin@arraytype.com', 'adMin@2026#')" class="inline-flex justify-center items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white text-xs font-semibold rounded-md shadow-sm transition duration-150 ease-in-out cursor-pointer">
                 {{ __('Admin Login') }}
             </button>
-            <button type="button" onclick="autofill('user@aians.com', 'password')" class="inline-flex justify-center items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white text-xs font-semibold rounded-md shadow-sm transition duration-150 ease-in-out cursor-pointer">
+            <button type="button" onclick="autofill('user@arraytype.com', 'password')" class="inline-flex justify-center items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white text-xs font-semibold rounded-md shadow-sm transition duration-150 ease-in-out cursor-pointer">
                 {{ __('User Login') }}
             </button>
         </div>
