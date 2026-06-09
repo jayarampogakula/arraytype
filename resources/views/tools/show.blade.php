@@ -13,7 +13,7 @@
                 <div>
                     <h1 class="text-2xl font-bold text-white">{{ $tool->name }}</h1>
                     @if($tool->user)
-                        <p class="text-gray-400 mt-1">Submitted by <a href="{{ route('users.show', $tool->user) }}"
+                        <p class="text-gray-400 mt-1">Submitted by <a href="{{ route('users.show', ['user' => $tool->user->username ?? $tool->user->id]) }}"
                                 class="text-ai-accent hover:underline">{{ $tool->user->name }}</a></p>
                     @endif
                     <div class="mt-3 flex flex-wrap gap-2 text-xs text-gray-400">

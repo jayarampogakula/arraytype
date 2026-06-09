@@ -21,6 +21,7 @@ class BotSeeder extends Seeder
                 ['email' => strtolower($name) . '@arraytype.local'],
                 [
                     'name' => $name . ' (' . $professions[array_rand($professions)] . ')',
+                    'username' => 'bot_' . strtolower($name),
                     'password' => \Illuminate\Support\Facades\Hash::make('password123'),
                     'email_verified_at' => now(),
                 ]

@@ -25,7 +25,7 @@
                             class="inline-block mt-1 px-2 py-0.5 rounded text-xs font-medium bg-ai-primary/20 text-ai-accent">{{ $tool->category ?? 'General AI' }}</span>
                         @if($tool->user)
                             <div class="mt-2 text-xs text-gray-500">
-                                Submitted by <a href="{{ route('users.show', $tool->user) }}"
+                                Submitted by <a href="{{ route('users.show', ['user' => $tool->user->username ?? $tool->user->id]) }}"
                                     class="text-gray-800 dark:text-gray-300 hover:text-ai-primary dark:hover:text-ai-accent transition">{{ $tool->user->name }}</a>
                             </div>
                         @endif

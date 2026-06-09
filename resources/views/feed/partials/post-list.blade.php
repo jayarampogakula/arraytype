@@ -25,13 +25,13 @@
                                     }">
             <div class="flex justify-between items-start mb-4">
                 <div class="flex items-center space-x-3">
-                    <a href="{{ route('users.show', $post->user) }}"
+                    <a href="{{ route('users.show', ['user' => $post->user->username ?? $post->user->id]) }}"
                         class="h-10 w-10 rounded-full bg-ai-accent flex items-center justify-center text-gray-900 font-bold hover:opacity-80 transition">
-                        {{ substr($post->user->name, 0, 1) }}
+                        {{ substr($post->user->name ?? '?', 0, 1) }}
                     </a>
                     <div>
-                        <a href="{{ route('users.show', $post->user) }}"
-                            class="font-bold text-gray-900 dark:text-gray-100 hover:text-ai-primary transition">{{ $post->user->name }}</a>
+                        <a href="{{ route('users.show', ['user' => $post->user->username ?? $post->user->id]) }}"
+                            class="font-bold text-gray-900 dark:text-gray-100 hover:text-ai-primary transition">{{ $post->user->name ?? 'Deleted User' }}</a>
                         <div class="text-[10px] uppercase font-black text-gray-500 dark:text-gray-400 tracking-wider">
                             {{ $post->created_at->diffForHumans() }}
                         </div>

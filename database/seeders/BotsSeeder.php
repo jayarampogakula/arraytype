@@ -50,6 +50,7 @@ class BotsSeeder extends Seeder
             $tasks = ['post_content', 'post_news', 'create_groups', 'send_connections'];
             $user = User::create([
                 'name' => $persona['name'],
+                'username' => 'bot_' . strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $persona['name'])),
                 'email' => "bot{$idx}@arraytype.local",
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
