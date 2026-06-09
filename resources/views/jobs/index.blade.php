@@ -75,7 +75,7 @@
 
     <!-- Main Content -->
     <div x-data="{ 
-        activeTab: 'all', 
+        activeTab: window.location.hash ? window.location.hash.substring(1) : 'all', 
         selectedJobId: {{ $jobs->first() ? $jobs->first()->id : 'null' }},
         applyJobId: null,
         applyJobTitle: '',
@@ -141,7 +141,7 @@
                         <div class="md:col-span-2">
                             <button type="submit"
                                 class="w-full h-12 bg-ai-primary hover:bg-ai-primary/90 transition text-white rounded-xl text-sm font-semibold shadow-sm shadow-blue-500/10 flex items-center justify-center gap-1.5">
-                                <svg class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
                                 Search
@@ -290,7 +290,7 @@
                                     @auth
                                         @if(in_array($job->id, $myApplications))
                                             <button disabled class="flex-grow sm:flex-grow-0 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold text-sm px-6 py-2.5 rounded-xl flex items-center justify-center gap-1.5">
-                                                <svg class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
                                                 </svg>
                                                 Applied on ArrayType
@@ -463,8 +463,8 @@
                         <h4 class="text-sm font-bold text-gray-900 dark:text-gray-100">AI Match Alerts</h4>
                         <p class="text-xs text-gray-500">Receive weekly emails when new jobs match your preferences.</p>
                     </div>
-                    <button type="button" @click="alerts = !alerts" :class="alerts ? 'bg-ai-primary' : 'bg-gray-300 dark:bg-white/10'" class="w-11 h-6 rounded-full p-0.5 transition duration-200 focus:outline-none relative">
-                        <span :class="alerts ? 'translate-x-5' : 'translate-x-0'" class="block w-5 h-5 rounded-full bg-white shadow transform transition duration-200"></span>
+                    <button type="button" @click="alerts = !alerts" :class="alerts ? 'bg-ai-primary' : 'bg-gray-300 dark:bg-white/10'" class="w-12 h-6 rounded-full p-0.5 transition duration-200 focus:outline-none relative">
+                        <span :class="alerts ? 'translate-x-6' : 'translate-x-0'" class="block w-5 h-5 rounded-full bg-white shadow transform transition duration-200"></span>
                     </button>
                 </div>
 
@@ -597,7 +597,7 @@
                                             Track Apply
                                         </button>
                                         <button @click="removeSaved(job.id)" class="text-gray-400 hover:text-red-500 p-1.5 transition">
-                                            <svg class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                         </button>
                                     </div>
                                 </div>
@@ -624,7 +624,7 @@
                                             <p class="text-xs text-gray-500 font-semibold" x-text="job.company"></p>
                                         </div>
                                         <button @click="removeApplied(job.id)" class="text-gray-400 hover:text-red-500 p-1.5 transition">
-                                            <svg class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                                         </button>
                                     </div>
                                     
@@ -901,12 +901,12 @@
                                                 <div class="flex items-center gap-2">
                                                     @if($app->applicant->profile && $app->applicant->profile->github_url)
                                                         <a href="{{ $app->applicant->profile->github_url }}" target="_blank" class="text-gray-400 hover:text-gray-600 dark:hover:text-white transition">
-                                                            <svg class="h-4.5 w-4.5" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.48 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.577.688.479C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z" clip-rule="evenodd"/></svg>
+                                                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.48 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.577.688.479C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z" clip-rule="evenodd"/></svg>
                                                         </a>
                                                     @endif
                                                     @if($app->applicant->profile && $app->applicant->profile->linkedin_url)
                                                         <a href="{{ $app->applicant->profile->linkedin_url }}" target="_blank" class="text-gray-400 hover:text-[#0077b5] transition">
-                                                            <svg class="h-4.5 w-4.5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75 1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                                                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75 1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
                                                         </a>
                                                     @endif
                                                 </div>
