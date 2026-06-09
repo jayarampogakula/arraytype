@@ -68,19 +68,19 @@ class DatabaseSeeder extends Seeder
         foreach ($users->take(2) as $user) {
             \App\Models\Tool::create([
                 'user_id' => $user->id,
-                'name' => 'Awesome AI ' . fake()->word(),
-                'url' => fake()->url(),
-                'description' => fake()->paragraph(),
+                'name' => 'Awesome AI ' . ucfirst(fake()->word()),
+                'url' => 'https://awesomeai.local',
+                'description' => 'A powerful local tool for managing vector indexing, semantic search, and RAG embeddings.',
                 'category' => 'LLM / Chatbot',
             ]);
 
             \App\Models\Product::create([
                 'user_id' => $user->id,
                 'category_id' => 1,
-                'name' => 'NextGen ' . fake()->word(),
-                'tagline' => fake()->sentence(),
-                'description' => fake()->paragraph(),
-                'website_url' => fake()->url(),
+                'name' => 'NextGen ' . ucfirst(fake()->word()),
+                'tagline' => 'Accelerating developer productivity using AI agents.',
+                'description' => 'An automated coding companion that writes, refactors, and tests code directly from natural language specifications.',
+                'website_url' => 'https://nextgen.local',
                 'status' => 'approved',
             ]);
         }
@@ -103,14 +103,29 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Seed News
-        foreach ($users->take(1) as $user) {
-            \App\Models\News::create([
-                'user_id' => $user->id,
-                'title' => fake()->sentence(),
-                'summary' => fake()->paragraph(),
-                'content' => fake()->paragraphs(3, true),
-                'status' => 'approved',
+        $newsArticles = [
+            [
+                'title' => 'OpenAI Releases Advanced Reasoning Model GPT-5 Reasoning Engine',
+                'summary' => 'OpenAI has officially launched its next-generation reasoning engine, showcasing significant improvements in mathematics, logical synthesis, and code generation tasks.',
+                'content' => "In an official blog post today, OpenAI announced the release of GPT-5's new reasoning capabilities. The model uses an updated chain-of-thought architecture that allows it to self-correct and verify its logic before returning final responses. Benchmarks show a 40% improvement on complex mathematics and competitive programming tasks.",
                 'category' => 'Industry',
+            ],
+            [
+                'title' => 'NVIDIA Unveils Next-Gen Blackwell Architecture for AI Datacenters',
+                'summary' => 'NVIDIA announced its Blackwell GPU cluster architecture, offering up to 25x reduced energy consumption and cost compared to previous generation Hopper architectures.',
+                'content' => "During the GTC keynote address, NVIDIA CEO Jensen Huang detailed the new Blackwell platform. Featuring 208 billion transistors, the dual-die chip provides significant throughput gains for LLM inference and trillion-parameter foundational model training. Major cloud providers have already committed to deploying Blackwell clusters later this year.",
+                'category' => 'Hardware',
+            ]
+        ];
+
+        foreach ($newsArticles as $idx => $art) {
+            \App\Models\News::create([
+                'user_id' => $users->skip($idx)->first()->id ?? $users->first()->id,
+                'title' => $art['title'],
+                'summary' => $art['summary'],
+                'content' => $art['content'],
+                'status' => 'approved',
+                'category' => $art['category'],
                 'source_url' => 'https://news.ycombinator.com',
             ]);
         }

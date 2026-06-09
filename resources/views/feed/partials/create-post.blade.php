@@ -1,6 +1,50 @@
 <!-- Create Post Box (LinkedIn Style) -->
 <div class="glass-panel rounded-xl bg-white dark:bg-[#1b1f23] shadow-sm border border-gray-200 dark:border-white/10 p-4 mb-4"
-    x-data="{ expanded: false, postType: 'text', pollOptions: ['', ''] }">
+    x-data="{ 
+        expanded: false, 
+        postType: 'text', 
+        pollOptions: ['', ''],
+        imageFiles: [],
+        videoFile: null,
+        videoName: '',
+        triggerImageUpload() {
+            document.getElementById('post-images').click();
+        },
+        triggerVideoUpload() {
+            document.getElementById('post-video').click();
+        },
+        handleImagesChange(e) {
+            const files = Array.from(e.target.files).slice(0, 5); // Upto 5 images
+            this.imageFiles = [];
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    this.imageFiles.push({ name: file.name, url: event.target.result });
+                };
+                reader.readAsDataURL(file);
+            });
+        },
+        handleVideoChange(e) {
+            const file = e.target.files[0];
+            if (file) {
+                this.videoFile = file;
+                this.videoName = file.name;
+            } else {
+                this.videoFile = null;
+                this.videoName = '';
+            }
+        },
+        removeImage(index) {
+            this.imageFiles.splice(index, 1);
+            // Since we can't easily programmatically modify filelist in FileInput,
+            // the backend handles whatever gets submitted. But this provides accurate visual states.
+        },
+        removeVideo() {
+            this.videoFile = null;
+            this.videoName = '';
+            document.getElementById('post-video').value = '';
+        }
+    }">
     <div class="flex items-start gap-3 mb-2">
         <a href="{{ auth()->check() ? route('profile.edit') : '#' }}" class="flex-shrink-0">
             <div
@@ -14,7 +58,7 @@
             Start a post
         </button>
 
-        <form x-show="expanded" action="{{ route('feed.store') }}" method="POST" class="flex-grow flex flex-col"
+        <form x-show="expanded" action="{{ route('feed.store') }}" method="POST" enctype="multipart/form-data" class="flex-grow flex flex-col"
             style="display: none;">
             @csrf
             @if(isset($group))
@@ -22,10 +66,39 @@
             @endif
             <input type="hidden" name="type" x-model="postType">
 
+            <!-- Hidden File Inputs -->
+            <input type="file" id="post-images" name="images[]" multiple accept="image/*" class="hidden" @change="handleImagesChange">
+            <input type="file" id="post-video" name="video" accept="video/*" class="hidden" @change="handleVideoChange">
+
             <textarea name="content" rows="4" autofocus
                 class="w-full bg-transparent border-none text-gray-900 dark:text-gray-100 p-2 focus:ring-0 placeholder-gray-500 text-lg resize-none"
                 :placeholder="postType === 'ask' ? 'Ask the community a question...' : (postType === 'poll' ? 'What do you want to ask in your poll?' : 'What do you want to talk about?')"
                 required></textarea>
+
+            <!-- Previews for Images -->
+            <div x-show="imageFiles.length > 0" class="grid grid-cols-5 gap-2 mt-3 p-2 bg-gray-50 dark:bg-black/10 rounded-xl border border-gray-200 dark:border-white/5">
+                <template x-for="(img, idx) in imageFiles" :key="idx">
+                    <div class="relative rounded-lg overflow-hidden border border-gray-200 dark:border-white/10 aspect-square">
+                        <img :src="img.url" class="w-full h-full object-cover">
+                        <button type="button" @click="removeImage(idx)" class="absolute top-1 right-1 bg-black/60 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-500 transition font-black">
+                            &times;
+                        </button>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Previews for Video -->
+            <div x-show="videoName" class="mt-3 bg-gray-50 dark:bg-black/20 border border-gray-200 dark:border-white/5 p-3 rounded-xl flex items-center justify-between">
+                <div class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 font-semibold">
+                    <svg class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    <span x-text="videoName" class="truncate max-w-[250px]"></span>
+                </div>
+                <button type="button" @click="removeVideo" class="text-gray-400 hover:text-red-500 font-black text-sm bg-black/10 hover:bg-black/20 rounded-full w-5 h-5 flex items-center justify-center">
+                    &times;
+                </button>
+            </div>
 
             <!-- Poll Options -->
             <template x-if="postType === 'poll'">
@@ -75,6 +148,24 @@
                                 d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                         </svg>
                     </button>
+
+                    <!-- In-Form File Upload Buttons -->
+                    <button type="button" @click="triggerImageUpload"
+                        class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition text-gray-500 hover:text-blue-500"
+                        title="Add Photo (up to 5)">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </button>
+                    <button type="button" @click="triggerVideoUpload"
+                        class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition text-gray-500 hover:text-green-500"
+                        title="Add Video">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                    </button>
                 </div>
                 <div class="flex gap-2">
                     <button type="button" @click="expanded = false"
@@ -88,7 +179,7 @@
 
     <!-- LinkedIn Action Buttons -->
     <div x-show="!expanded" class="flex justify-around items-center pt-1 pb-1">
-        <button @click="expanded = true; postType = 'text'"
+        <button @click="expanded = true; postType = 'text'; $nextTick(() => triggerImageUpload())"
             class="flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-white/5 px-4 py-3 rounded-xl transition font-bold text-gray-700 dark:text-gray-300 text-sm">
             <svg class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -96,7 +187,7 @@
             </svg>
             Photo
         </button>
-        <button @click="expanded = true; postType = 'text'"
+        <button @click="expanded = true; postType = 'text'; $nextTick(() => triggerVideoUpload())"
             class="flex items-center gap-2 hover:bg-gray-50 dark:hover:bg-white/5 px-4 py-3 rounded-xl transition font-bold text-gray-700 dark:text-gray-300 text-sm">
             <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

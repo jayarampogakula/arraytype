@@ -24,7 +24,10 @@ class FeedController extends Controller
             'group_id' => 'nullable|exists:groups,id',
             'type' => 'nullable|in:text,ask,poll',
             'poll_options' => 'nullable|array|min:2|max:5',
-            'poll_options.*' => 'required_with:poll_options|string|max:255'
+            'poll_options.*' => 'required_with:poll_options|string|max:255',
+            'images' => 'nullable|array|max:5',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:10240',
+            'video' => 'nullable|file|mimes:mp4,mov,avi,wmv,quicktime|max:51200'
         ]);
 
         $type = $request->input('type', 'text');
@@ -35,12 +38,27 @@ class FeedController extends Controller
             $pollOptions = json_encode(array_values(array_filter($request->input('poll_options', []))));
         }
 
+        $imagePaths = [];
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('posts/images', 'public');
+                $imagePaths[] = $path;
+            }
+        }
+
+        $videoPath = null;
+        if ($request->hasFile('video')) {
+            $videoPath = $request->file('video')->store('posts/videos', 'public');
+        }
+
         Post::create([
             'user_id' => auth()->id(),
             'group_id' => $request->input('group_id'),
             'content' => $request->input('content'),
             'type' => $type,
             'poll_options' => $pollOptions,
+            'images' => count($imagePaths) > 0 ? json_encode($imagePaths) : null,
+            'video_path' => $videoPath,
         ]);
 
         return back()->with('success', 'Post created successfully!');

@@ -294,7 +294,7 @@
                                         </button>
                                     </div>
                                     <div x-show="editing" x-cloak class="w-full mt-1">
-                                        <form action="{{ route('admin.bots.update', ['user' => $bot->id]) }}" method="POST" class="flex flex-col gap-2">
+                                        <form action="{{ route('admin.bots.update', ['user' => $bot->username]) }}" method="POST" class="flex flex-col gap-2">
                                             @csrf
                                             @method('PUT')
                                             <input type="text" name="name" x-model="newName" class="w-full bg-white dark:bg-[#1C2128] border border-ai-primary/50 focus:border-ai-primary shadow-[0_0_0_2px_rgba(59,130,246,0.2)] rounded-lg text-gray-900 dark:text-white text-sm p-1.5 outline-none transition">

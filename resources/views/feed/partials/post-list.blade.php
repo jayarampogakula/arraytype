@@ -74,6 +74,26 @@
                 </div>
             @endif
 
+            <!-- Media Files -->
+            @if($post->images)
+                @php $postImages = json_decode($post->images, true) ?? []; @endphp
+                @if(count($postImages) > 0)
+                    <div class="mt-4 grid gap-2 {{ count($postImages) === 1 ? 'grid-cols-1' : (count($postImages) === 2 ? 'grid-cols-2' : 'grid-cols-3') }}">
+                        @foreach($postImages as $idx => $img)
+                            <div class="relative overflow-hidden rounded-xl border border-gray-200 dark:border-white/5 {{ count($postImages) === 1 ? 'max-h-[400px]' : 'aspect-square' }}">
+                                <img src="{{ asset('storage/' . $img) }}" class="w-full h-full object-cover hover:scale-105 transition duration-300 cursor-pointer">
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+            @endif
+
+            @if($post->video_path)
+                <div class="mt-4 rounded-xl overflow-hidden border border-gray-200 dark:border-white/5 bg-black shadow-inner">
+                    <video src="{{ asset('storage/' . $post->video_path) }}" controls class="w-full max-h-[450px] object-contain"></video>
+                </div>
+            @endif
+
             <hr class="border-white/10 my-3">
 
             <div class="flex items-center space-x-4 sm:space-x-6 text-gray-400 text-sm relative">
