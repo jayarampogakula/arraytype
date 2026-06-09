@@ -15,9 +15,17 @@ class ProductController extends Controller
         $categories = ProductCategory::orderBy('name')->get();
         $activeCategory = null;
 
+        $now = now();
         $query = Product::with(['category', 'creator'])
             ->withCount(['votes', 'comments'])
-            ->where('status', 'approved');
+            ->where('status', 'approved')
+            ->selectRaw('products.*, (
+                (select count(*) from product_votes where product_votes.product_id = products.id) * 10 
+                + (select count(*) from product_comments where product_comments.product_id = products.id) * 5 
+                + (case when is_pinned = 1 then 100000 else 0 end)
+                + (case when featured_until >= ? then 50000 else 0 end)
+                - (timestampdiff(HOUR, created_at, ?) * 2)
+            ) as ranking_score', [$now, $now]);
 
         if ($request->filled('category')) {
             $activeCategory = ProductCategory::where('slug', $request->input('category'))->firstOrFail();
@@ -25,9 +33,7 @@ class ProductController extends Controller
         }
 
         $products = $query
-            ->orderByDesc('featured_until')
-            ->orderByDesc('launch_date')
-            ->latest()
+            ->orderByDesc('ranking_score')
             ->paginate(18);
 
         $currentDate = Carbon::now();

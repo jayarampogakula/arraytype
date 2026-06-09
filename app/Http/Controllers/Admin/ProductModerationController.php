@@ -15,7 +15,12 @@ class ProductModerationController extends Controller
             ->latest()
             ->get();
 
-        return view('admin.products.index', compact('pendingProducts'));
+        $approvedProducts = Product::with(['category', 'creator'])
+            ->where('status', 'approved')
+            ->latest()
+            ->get();
+
+        return view('admin.products.index', compact('pendingProducts', 'approvedProducts'));
     }
 
     public function approve(Product $product)
@@ -30,5 +35,13 @@ class ProductModerationController extends Controller
         $product->update(['status' => 'rejected']);
 
         return back()->with('success', 'Product rejected.');
+    }
+
+    public function togglePin(Product $product)
+    {
+        $product->update(['is_pinned' => !$product->is_pinned]);
+
+        $status = $product->is_pinned ? 'pinned to the 1st page.' : 'unpinned from the 1st page.';
+        return back()->with('success', "Product '{$product->name}' successfully {$status}");
     }
 }

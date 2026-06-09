@@ -98,6 +98,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('products.approve');
         Route::post('/products/{product}/reject', [\App\Http\Controllers\Admin\ProductModerationController::class, 'reject'])
             ->name('products.reject');
+        Route::post('/products/{product}/toggle-pin', [\App\Http\Controllers\Admin\ProductModerationController::class, 'togglePin'])
+            ->name('products.toggle-pin');
 
         Route::get('/news/pending', [\App\Http\Controllers\Admin\NewsModerationController::class, 'index'])
             ->name('news.pending');
@@ -105,6 +107,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('news.approve');
         Route::post('/news/{news}/reject', [\App\Http\Controllers\Admin\NewsModerationController::class, 'reject'])
             ->name('news.reject');
+
+        Route::resource('team', \App\Http\Controllers\Admin\TeamController::class)->except(['create', 'show', 'edit']);
     });
 });
 

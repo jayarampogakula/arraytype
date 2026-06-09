@@ -85,6 +85,16 @@
                     class="block px-4 py-2 text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 hover:underline flex items-center gap-1.5">
                     🤖 Bot Persona Matrix
                 </a>
+                <a href="{{ route('admin.products.pending') }}"
+                    class="block px-4 py-2 text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 hover:underline flex items-center gap-1.5">
+                    🚀 Products Moderator
+                </a>
+                @if(auth()->user()->admin_role === 'super_admin')
+                    <a href="{{ route('admin.team.index') }}"
+                        class="block px-4 py-2 text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 hover:underline flex items-center gap-1.5">
+                        👥 Admin Team
+                    </a>
+                @endif
             </div>
         @endif
     </div>

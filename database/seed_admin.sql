@@ -1,7 +1,7 @@
 -- Admin user seed for ArrayType
 SET @now = NOW();
-INSERT INTO users (name, email, password, is_admin, email_verified_at, created_at, updated_at) 
-VALUES ('ArrayType Admin', 'admin@arraytype.com', '$2y$12$N7n4Zy6ORFEFGLJh8MztQbateTQ8DSlF9RaYqWUvwM', 1, NOW(), NOW(), NOW());
+INSERT INTO users (name, email, password, is_admin, admin_role, email_verified_at, created_at, updated_at) 
+VALUES ('ArrayType Admin', 'admin@arraytype.com', '$2y$12$N7n4Zy6ORFEFGLJh8MztQbateTQ8DSlF9RaYqWUvwM', 1, 'super_admin', NOW(), NOW(), NOW());
 
 SET @admin_id = LAST_INSERT_ID();
 

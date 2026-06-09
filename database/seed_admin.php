@@ -16,6 +16,7 @@ $userId = DB::table('users')->insertGetId([
     'email' => 'admin@arraytype.com',
     'password' => Hash::make('ArrayType#2026!Secure'),
     'is_admin' => 1,
+    'admin_role' => 'super_admin',
     'email_verified_at' => $now,
     'created_at' => $now,
     'updated_at' => $now,

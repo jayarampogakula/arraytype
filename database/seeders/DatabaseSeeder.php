@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
                 'username' => 'admin',
                 'password' => \Illuminate\Support\Facades\Hash::make('adMin@2026#'),
                 'is_admin' => true,
+                'admin_role' => 'super_admin',
                 'email_verified_at' => now(),
             ]
         );

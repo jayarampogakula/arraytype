@@ -10,17 +10,9 @@
     <div class="bg-white dark:bg-ai-bg border-b border-gray-100 dark:border-white/5 shadow-sm relative z-20">
         <div class="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center gap-8 overflow-x-auto no-scrollbar pt-4 pb-0">
-                <a href="{{ route('products.index') }}" class="text-[14px] font-bold text-ai-primary whitespace-nowrap pb-3 border-b-2 border-ai-primary">All Categories</a>
-                @foreach([
-                    'Writing & Content', 
-                    'Image & Design', 
-                    'Video & Audio', 
-                    'Coding & Developer Tools', 
-                    'Automation & Agents', 
-                    'Productivity & Business', 
-                    'Research & Data'
-                ] as $cat)
-                    <a href="#" class="text-[14px] font-medium text-gray-500 hover:text-gray-900 dark:hover:text-white transition whitespace-nowrap pb-3 border-b-2 border-transparent hover:border-gray-200 dark:hover:border-gray-700">{{ $cat }}</a>
+                <a href="{{ route('products.index') }}" class="text-[14px] {{ !$activeCategory ? 'font-bold text-ai-primary border-ai-primary' : 'font-medium text-gray-500 border-transparent' }} whitespace-nowrap pb-3 border-b-2 hover:border-ai-primary transition">All Categories</a>
+                @foreach($categories as $cat)
+                    <a href="{{ route('products.index', ['category' => $cat->slug]) }}" class="text-[14px] {{ ($activeCategory && $activeCategory->id === $cat->id) ? 'font-bold text-ai-primary border-ai-primary' : 'font-medium text-gray-500 border-transparent' }} hover:text-gray-900 dark:hover:text-white transition whitespace-nowrap pb-3 border-b-2 hover:border-ai-primary">{{ $cat->name }}</a>
                 @endforeach
             </div>
         </div>
