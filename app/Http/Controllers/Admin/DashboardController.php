@@ -46,8 +46,8 @@ class DashboardController extends Controller
         $totalJobs = JobListing::count();
         $totalNews = News::count();
 
-        $recentProducts = Product::with('user')->latest()->take(5)->get();
-        $recentNews = News::with('user')->latest()->take(5)->get();
+        $recentProducts = Product::with('creator')->latest()->take(5)->get();
+        $recentNews = News::with('author')->latest()->take(5)->get();
         $recentUsers = User::latest()->take(5)->get();
 
         return view('admin.dashboard', compact(

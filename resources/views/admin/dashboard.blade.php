@@ -243,7 +243,7 @@
                                             <div class="text-xs text-gray-500 dark:text-gray-400 line-clamp-1 mt-0.5">{{ $product->tagline }}</div>
                                         </td>
                                         <td class="py-4 px-6 text-sm text-gray-600 dark:text-gray-300">
-                                            {{ $product->user->name ?? 'Deleted User' }}
+                                            {{ $product->creator->name ?? 'Deleted User' }}
                                         </td>
                                         <td class="py-4 px-6 text-sm">
                                             <a href="{{ $product->website_url }}" target="_blank" class="text-ai-primary hover:underline font-semibold flex items-center gap-1">
@@ -305,7 +305,7 @@
                                     </div>
                                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-1">{{ $news->summary }}</p>
                                     <div class="mt-2 flex items-center gap-3 text-[11px] text-gray-400 font-medium">
-                                        <span>Author: <span class="text-gray-600 dark:text-gray-300">{{ $news->user->name ?? 'Unknown' }}</span></span>
+                                        <span>Author: <span class="text-gray-600 dark:text-gray-300">{{ $news->author->name ?? 'Unknown' }}</span></span>
                                         <span class="w-1.5 h-1.5 rounded-full bg-gray-300 dark:bg-white/10"></span>
                                         <span class="text-indigo-500">{{ $news->category }}</span>
                                     </div>
