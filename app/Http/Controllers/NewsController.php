@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\Auth;
 
 class NewsController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $newsQuery = News::with('author')->latest();
+        $newsQuery = News::with('author')->withCount('comments');
 
         if (!auth()->check() || !auth()->user()->is_admin) {
             $newsQuery->where(function ($query) {
@@ -21,8 +21,31 @@ class NewsController extends Controller
             });
         }
 
+        $tab = $request->input('tab', 'latest');
+        $range = $request->input('range', 'today');
+
+        if ($tab === 'trending') {
+            $dateLimit = match ($range) {
+                'today' => now()->subDay(),
+                'week' => now()->subWeek(),
+                'month' => now()->subMonth(),
+                default => now()->subDay(),
+            };
+            $newsQuery->where('created_at', '>=', $dateLimit)
+                ->orderByDesc('views_count')
+                ->orderByDesc('comments_count');
+        } elseif ($tab === 'hot') {
+            $newsQuery->orderByDesc('is_hot')
+                ->orderByDesc('comments_count')
+                ->orderByDesc('views_count');
+        } elseif ($tab === 'views') {
+            $newsQuery->orderByDesc('views_count');
+        } else {
+            $newsQuery->latest();
+        }
+
         $news = $newsQuery->get();
-        return view('news.index', compact('news'));
+        return view('news.index', compact('news', 'tab', 'range'));
     }
 
     public function create()
@@ -47,6 +70,7 @@ class NewsController extends Controller
             'status' => 'pending',
             'url' => $request->source_url,
             'user_id' => Auth::id(),
+            'is_hot' => false,
         ]);
 
         return redirect()->route('news.index')->with('success', 'News submitted successfully! Pending review.');
@@ -57,6 +81,9 @@ class NewsController extends Controller
         if ($news->status !== 'approved' && !(auth()->check() && (auth()->user()->is_admin || $news->user_id === auth()->id()))) {
             abort(404);
         }
+
+        // Increment view count
+        $news->increment('views_count');
 
         $news->load(['author', 'comments.user']);
 

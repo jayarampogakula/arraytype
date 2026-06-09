@@ -11,7 +11,18 @@ class Product extends Model
     protected $casts = [
         'launch_date' => 'date',
         'featured_until' => 'datetime',
+        'pinned_until' => 'datetime',
     ];
+
+    public function isPinnedHomepage(): bool
+    {
+        return $this->is_pinned || ($this->pin_type === 'homepage' && $this->pinned_until && $this->pinned_until->isFuture());
+    }
+
+    public function isPinnedCategory(): bool
+    {
+        return $this->pin_type === 'category' && $this->pinned_until && $this->pinned_until->isFuture();
+    }
 
     public function category()
     {

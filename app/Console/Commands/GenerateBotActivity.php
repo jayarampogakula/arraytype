@@ -30,6 +30,19 @@ class GenerateBotActivity extends Command
             return;
         }
 
+        // Automatically accept any pending connection requests sent to bots
+        $botIds = $bots->pluck('id')->toArray();
+        $pendingBotRequests = \App\Models\Connection::whereIn('connected_user_id', $botIds)
+            ->where('status', 'pending')
+            ->get();
+
+        if (!$pendingBotRequests->isEmpty()) {
+            foreach ($pendingBotRequests as $req) {
+                $req->update(['status' => 'accepted']);
+                $this->info("Automatically accepted pending connection request from User ID {$req->user_id} to Bot ID {$req->connected_user_id}.");
+            }
+        }
+
         $bot = $bots->random();
         $task = $bot->bot_task ?? 'post_content';
 
@@ -125,32 +138,106 @@ class GenerateBotActivity extends Command
 
     protected function generateNewsActivity($bot)
     {
-        $headlines = [
-            "Vibe-Coding is the Next Big Wave in Software Development",
-            "Vite 7 Launches with 5x Performance Improvement in Hot Reloading",
-            "OpenAI Announces GPT-5 Search Features Available Globally",
-            "Anthropic Releases Claude 4 Opus with Advanced Logic Engine",
-            "Meta Open Sources Llama 4 400B Model with Multilingual Support",
-            "Apple's On-Device Intelligence Framework Outperforms Cloud Competitors",
-            "NVIDIA Announces Next-Generation Blackwell Ultra AI Chips",
-            "Google DeepMind's AlphaFold 3 Maps Cellular Interactions",
-            "Mistral AI Launches Pixtral 12B Multimodal Model",
-            "Microsoft Introduces Copilot Agents to Automate Business Processes"
-        ];
+        $posted = false;
 
-        $headline = $headlines[array_rand($headlines)];
+        try {
+            $tags = ['ai', 'machinelearning', 'openai', 'llm'];
+            $tag = $tags[array_rand($tags)];
+            $response = \Illuminate\Support\Facades\Http::timeout(6)->get('https://dev.to/api/articles', [
+                'tag' => $tag,
+                'per_page' => 15,
+                'top' => 7
+            ]);
 
-        \App\Models\News::create([
-            'user_id' => $bot->id,
-            'title' => $headline,
-            'summary' => 'This is a breaking update on the latest developments in artificial intelligence, deep learning, and vector search systems.',
-            'content' => 'In a major announcement today, industry leaders unveiled new capabilities that promise to change how developer workflows and LLM agentic pipelines are designed. The technology is rolling out to enterprise users and the developer community over the coming weeks.',
-            'source_url' => 'https://news.ycombinator.com',
-            'status' => 'approved',
-            'category' => 'Industry'
-        ]);
+            if ($response->successful()) {
+                $articles = $response->json();
+                if (is_array($articles) && !empty($articles)) {
+                    shuffle($articles);
+                    foreach ($articles as $article) {
+                        if (empty($article['title']) || empty($article['url'])) {
+                            continue;
+                        }
 
-        $this->info("Bot {$bot->name} posted a new AI news article: '{$headline}'");
+                        // Check if already posted
+                        $exists = \App\Models\News::where('title', $article['title'])
+                            ->orWhere('source_url', $article['url'])
+                            ->exists();
+
+                        if (!$exists) {
+                            $title = trim($article['title']);
+                            $summary = trim($article['description'] ?? 'A real-time update on artificial intelligence and developer tools.');
+                            $url = $article['url'];
+                            
+                            // Fetch full article for real content details
+                            $content = 'Detailed insights are available on the source platform.';
+                            try {
+                                $fullResponse = \Illuminate\Support\Facades\Http::timeout(3)->get('https://dev.to/api/articles/' . $article['id']);
+                                if ($fullResponse->successful()) {
+                                    $fullData = $fullResponse->json();
+                                    if (!empty($fullData['body_markdown'])) {
+                                        $content = trim($fullData['body_markdown']);
+                                    }
+                                }
+                            } catch (\Exception $ex) {
+                                $content = $summary;
+                            }
+
+                            \App\Models\News::create([
+                                'user_id' => $bot->id,
+                                'title' => mb_substr($title, 0, 255),
+                                'source_url' => $url,
+                                'summary' => mb_substr($summary, 0, 1000),
+                                'content' => $content,
+                                'category' => 'Technology',
+                                'status' => 'approved',
+                                'views_count' => rand(10, 150),
+                                'is_hot' => (rand(1, 10) > 8),
+                            ]);
+
+                            $this->info("Bot {$bot->name} fetched & posted real-time news: '{$title}'");
+                            $posted = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            $this->warn('Real-time news API fetch failed: ' . $e->getMessage() . '. Falling back to local headlines.');
+        }
+
+        if (!$posted) {
+            $headlines = [
+                "Vibe-Coding is the Next Big Wave in Software Development",
+                "Vite 7 Launches with 5x Performance Improvement in Hot Reloading",
+                "OpenAI Announces GPT-5 Search Features Available Globally",
+                "Anthropic Releases Claude 4 Opus with Advanced Logic Engine",
+                "Meta Open Sources Llama 4 400B Model with Multilingual Support",
+                "Apple's On-Device Intelligence Framework Outperforms Cloud Competitors",
+                "NVIDIA Announces Next-Generation Blackwell Ultra AI Chips",
+                "Google DeepMind's AlphaFold 3 Maps Cellular Interactions",
+                "Mistral AI Launches Pixtral 12B Multimodal Model",
+                "Microsoft Introduces Copilot Agents to Automate Business Processes"
+            ];
+
+            $headline = $headlines[array_rand($headlines)];
+
+            // Check if already posted
+            if (!\App\Models\News::where('title', $headline)->exists()) {
+                \App\Models\News::create([
+                    'user_id' => $bot->id,
+                    'title' => $headline,
+                    'summary' => 'This is a breaking update on the latest developments in artificial intelligence, deep learning, and vector search systems.',
+                    'content' => 'In a major announcement today, industry leaders unveiled new capabilities that promise to change how developer workflows and LLM agentic pipelines are designed. The technology is rolling out to enterprise users and the developer community over the coming weeks.',
+                    'source_url' => 'https://news.ycombinator.com',
+                    'status' => 'approved',
+                    'category' => 'Industry',
+                    'views_count' => rand(5, 50),
+                    'is_hot' => (rand(1, 10) > 8),
+                ]);
+            }
+
+            $this->info("Bot {$bot->name} posted a fallback news article: '{$headline}'");
+        }
     }
 
     protected function generateGroupActivity($bot)
@@ -228,7 +315,7 @@ class GenerateBotActivity extends Command
                 'tagline' => 'Your conversational AI assistant by OpenAI',
                 'description' => 'A state-of-the-art conversational AI system by OpenAI designed for answering questions, drafting content, explaining concepts, and writing software code.',
                 'website_url' => 'https://chatgpt.com',
-                'category_slug' => 'ai-chatbots',
+                'category_slug' => 'agents',
                 'logo' => 'https://images.unsplash.com/photo-1678269137974-b58602b9e6fa?q=80&w=200&auto=format&fit=crop'
             ],
             [
@@ -236,7 +323,7 @@ class GenerateBotActivity extends Command
                 'tagline' => 'Helpful, harmless, and honest AI assistant by Anthropic',
                 'description' => 'Anthropic\'s advanced AI chatbot that excels at deep reasoning, coding assistance, mathematical logic, and processing large volumes of textual documentation.',
                 'website_url' => 'https://claude.ai',
-                'category_slug' => 'ai-chatbots',
+                'category_slug' => 'agents',
                 'logo' => 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=200&auto=format&fit=crop'
             ],
             [
@@ -244,7 +331,7 @@ class GenerateBotActivity extends Command
                 'tagline' => 'Next-generation multimodal AI by Google',
                 'description' => 'Google\'s conversational assistant integrated with Google Search. It excels at drawing insights across text, code, images, audio, and video formats.',
                 'website_url' => 'https://gemini.google.com',
-                'category_slug' => 'ai-chatbots',
+                'category_slug' => 'agents',
                 'logo' => 'https://images.unsplash.com/photo-1707343843437-caacff5cfa74?q=80&w=200&auto=format&fit=crop'
             ],
             [
@@ -252,7 +339,7 @@ class GenerateBotActivity extends Command
                 'tagline' => 'The AI-first code editor for rapid development',
                 'description' => 'An AI-powered fork of VS Code built to help developers write and edit code faster with built-in chat, inline generation, codebase indexing, and multi-file editing.',
                 'website_url' => 'https://cursor.com',
-                'category_slug' => 'ai-coding-assistants',
+                'category_slug' => 'coding',
                 'logo' => 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=200&auto=format&fit=crop'
             ],
             [
@@ -260,7 +347,7 @@ class GenerateBotActivity extends Command
                 'tagline' => 'Generative UI system for frontend developers',
                 'description' => 'An AI companion by Vercel that turns natural language descriptions into ready-to-use React, Tailwind CSS, and HTML component code in real-time.',
                 'website_url' => 'https://v0.dev',
-                'category_slug' => 'developer-tools',
+                'category_slug' => 'coding',
                 'logo' => 'https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=200&auto=format&fit=crop'
             ],
             [
@@ -268,7 +355,7 @@ class GenerateBotActivity extends Command
                 'tagline' => 'State-of-the-art text-to-speech and voice cloning AI',
                 'description' => 'A leading generative audio platform designed for generating ultra-realistic voiceovers, synthetic sound effects, and lifelike multi-language text-to-speech.',
                 'website_url' => 'https://elevenlabs.io',
-                'category_slug' => 'video-audio-ai',
+                'category_slug' => 'content',
                 'logo' => 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?q=80&w=200&auto=format&fit=crop'
             ],
             [
@@ -276,7 +363,7 @@ class GenerateBotActivity extends Command
                 'tagline' => 'High-quality generative text-to-image art creator',
                 'description' => 'An independent research lab focusing on creative expression, providing an AI image generator capable of creating stunning artistic and photorealistic graphics from prompts.',
                 'website_url' => 'https://midjourney.com',
-                'category_slug' => 'ai-art-design',
+                'category_slug' => 'content',
                 'logo' => 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?q=80&w=200&auto=format&fit=crop'
             ],
             [
@@ -284,7 +371,7 @@ class GenerateBotActivity extends Command
                 'tagline' => 'Open source text-to-image generator',
                 'description' => 'Stability AI\'s open-source generative model that produces high-resolution images, artworks, and digital assets from natural language descriptions.',
                 'website_url' => 'https://stability.ai',
-                'category_slug' => 'ai-art-design',
+                'category_slug' => 'content',
                 'logo' => 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=200&auto=format&fit=crop'
             ],
             [
@@ -292,7 +379,7 @@ class GenerateBotActivity extends Command
                 'tagline' => 'Conversational search engine with direct source citations',
                 'description' => 'An AI-powered search tool that delivers direct, natural language answers to queries, backed by real-time web indexing and verifiable source links.',
                 'website_url' => 'https://perplexity.ai',
-                'category_slug' => 'ai-search-engines',
+                'category_slug' => 'research',
                 'logo' => 'https://images.unsplash.com/photo-1546074177-3df148018967?q=80&w=200&auto=format&fit=crop'
             ],
             [
@@ -300,7 +387,7 @@ class GenerateBotActivity extends Command
                 'tagline' => 'Advanced open-source reasoning and language model',
                 'description' => 'An extremely capable open-source language model developed by DeepSeek, offering state-of-the-art programming, math, logic, and reasoning capabilities.',
                 'website_url' => 'https://deepseek.com',
-                'category_slug' => 'ai-models',
+                'category_slug' => 'models',
                 'logo' => 'https://images.unsplash.com/photo-1614741118887-7a4ee193a5fa?q=80&w=200&auto=format&fit=crop'
             ],
             [
@@ -308,7 +395,7 @@ class GenerateBotActivity extends Command
                 'tagline' => 'Visual workflow automation platform',
                 'description' => 'A powerful system to design, build, and automate complex workflows. Connect apps, tools, and custom AI agents together visually without writing code.',
                 'website_url' => 'https://make.com',
-                'category_slug' => 'automation-tools',
+                'category_slug' => 'automation',
                 'logo' => 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=200&auto=format&fit=crop'
             ]
         ];

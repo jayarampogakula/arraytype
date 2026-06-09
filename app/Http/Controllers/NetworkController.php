@@ -34,6 +34,25 @@ class NetworkController extends Controller
             ->where('status', 'accepted')
             ->count();
 
+        // Fetch accepted connections details
+        $connectionsList = Connection::where(function ($q) use ($user) {
+            $q->where('user_id', $user->id)->orWhere('connected_user_id', $user->id);
+        })
+            ->where('status', 'accepted')
+            ->with(['user.profile', 'connectedUser.profile'])
+            ->latest()
+            ->get();
+
+        $connections = $connectionsList->map(function ($conn) use ($user) {
+            return $conn->user_id === $user->id ? $conn->connectedUser : $conn->user;
+        });
+
+        // Fetch following and followers
+        $following = $user->following()->with('profile')->get();
+        $followers = $user->followers()->with('profile')->get();
+        $followingCount = $following->count();
+        $followersCount = $followers->count();
+
         // Suggestions (exclude self, existing connections, and pending requests)
         // Correctly exclude users who have any connection record with current user
         $sentIds = Connection::where('user_id', $user->id)->pluck('connected_user_id')->toArray();
@@ -46,7 +65,17 @@ class NetworkController extends Controller
             ->take(6)
             ->get();
 
-        return view('network.index', compact('invitations', 'sentRequests', 'connectionsCount', 'suggestions'));
+        return view('network.index', compact(
+            'invitations', 
+            'sentRequests', 
+            'connectionsCount', 
+            'suggestions', 
+            'connections',
+            'following',
+            'followers',
+            'followingCount',
+            'followersCount'
+        ));
     }
 
     public function connect(User $user)

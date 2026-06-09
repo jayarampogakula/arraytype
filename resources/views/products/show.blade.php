@@ -28,15 +28,24 @@
                             <div class="flex items-center gap-3 flex-wrap">
                                 <h1 class="text-[24px] font-bold text-gray-900 dark:text-white leading-tight">{{ $product->name }}</h1>
                                 <span class="px-2.5 py-0.5 bg-gradient-to-r from-ai-primary to-ai-accent text-white text-[11px] font-bold rounded-full shadow-sm whitespace-nowrap">Launching today</span>
+                                @if($product->creator?->isPremium())
+                                    <span class="text-[10px] bg-amber-500/15 text-amber-400 font-extrabold px-2 py-0.5 rounded border border-amber-500/20 uppercase tracking-wider flex items-center gap-1" title="Premium Creator">👑 Pro Creator</span>
+                                @endif
                             </div>
                             <p class="text-[20px] text-gray-600 dark:text-gray-300 font-normal leading-tight mt-1">{{ $product->tagline }}</p>
                             <div class="text-[13px] text-gray-500 font-medium mt-1">308 followers</div>
                         </div>
                     </div>
                     
-                    <a href="{{ $product->website_url }}" target="_blank" rel="noopener" class="px-5 py-2 border border-gray-200 dark:border-white/20 rounded-full text-[14px] font-bold hover:bg-gray-50 dark:hover:bg-white/5 transition flex-shrink-0">
-                        Visit website
-                    </a>
+                    @if($product->creator?->isPremium() && $product->custom_cta_text)
+                        <a href="{{ route('products.click', $product) }}" target="_blank" rel="noopener" class="px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 border border-transparent text-white rounded-full text-[14px] font-extrabold transition flex-shrink-0 shadow-lg shadow-indigo-600/25">
+                            {{ $product->custom_cta_text }}
+                        </a>
+                    @else
+                        <a href="{{ route('products.click', $product) }}" target="_blank" rel="noopener" class="px-5 py-2 border border-gray-200 dark:border-white/20 rounded-full text-[14px] font-bold hover:bg-gray-50 dark:hover:bg-white/5 transition flex-shrink-0">
+                            Visit website
+                        </a>
+                    @endif
                 </div>
 
                 <!-- Breadcrumbs / Tags -->
@@ -146,6 +155,9 @@
                             <div class="flex items-center gap-2">
                                 <span class="font-bold text-[15px] text-gray-900 dark:text-white">{{ $product->creator?->name ?? 'Maker' }}</span>
                                 <span class="px-1.5 py-0.5 bg-[#14A864] text-white text-[10px] font-bold rounded uppercase tracking-wider flex items-center gap-1"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg> Maker</span>
+                                @if($product->creator?->isPremium())
+                                    <span class="text-xs text-yellow-400 font-bold ml-1" title="Premium Maker">👑 Pro Maker</span>
+                                @endif
                             </div>
                             <div class="text-[15px] text-gray-800 dark:text-gray-300 leading-[1.6]">
                                 <p>Hi Product Hunt 👋</p><br>

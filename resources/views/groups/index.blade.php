@@ -8,13 +8,29 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         @forelse($groups as $group)
+            @php
+                $icon = match($group->slug) {
+                    'discussions' => '💬',
+                    'showcases' => '🚀',
+                    'questions' => '❓',
+                    'tutorials' => '📚',
+                    default => '👥'
+                };
+                $gradient = match($group->slug) {
+                    'discussions' => 'from-blue-650 to-indigo-600 shadow-blue-500/10',
+                    'showcases' => 'from-emerald-500 to-teal-550 shadow-emerald-500/10',
+                    'questions' => 'from-purple-600 to-pink-600 shadow-purple-500/10',
+                    'tutorials' => 'from-amber-500 to-orange-500 shadow-amber-500/10',
+                    default => 'from-ai-primary to-ai-accent'
+                };
+            @endphp
             <a href="{{ route('groups.show', $group) }}" class="block">
                 <div
                     class="glass-panel rounded-xl p-5 border border-white/5 hover:border-ai-primary/50 transition cursor-pointer">
                     <div class="flex items-start space-x-4">
                         <div
-                            class="h-12 w-12 rounded-lg bg-gradient-to-br from-ai-primary to-ai-accent flex items-center justify-center text-white font-bold text-xl">
-                            {{ substr($group->name, 0, 1) }}
+                            class="h-12 w-12 rounded-lg bg-gradient-to-br {{ $gradient }} flex items-center justify-center text-white font-bold text-xl shadow-md">
+                            {{ $icon }}
                         </div>
                         <div>
                             <h3 class="text-lg font-bold text-gray-900 dark:text-gray-200">{{ $group->name }}</h3>

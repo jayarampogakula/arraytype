@@ -37,11 +37,50 @@ class ProductModerationController extends Controller
         return back()->with('success', 'Product rejected.');
     }
 
-    public function togglePin(Product $product)
+    public function togglePin(Request $request, Product $product)
     {
-        $product->update(['is_pinned' => !$product->is_pinned]);
+        $request->validate([
+            'pin_type' => 'required|in:none,homepage,category',
+            'duration' => 'nullable|in:1_day,7_days,30_days,indefinite',
+        ]);
 
-        $status = $product->is_pinned ? 'pinned to the 1st page.' : 'unpinned from the 1st page.';
-        return back()->with('success', "Product '{$product->name}' successfully {$status}");
+        $pinType = $request->input('pin_type');
+        $duration = $request->input('duration');
+
+        if ($pinType === 'none') {
+            $product->update([
+                'is_pinned' => false,
+                'pin_type' => 'none',
+                'pinned_until' => null,
+            ]);
+            return back()->with('success', "Product '{$product->name}' successfully unpinned.");
+        }
+
+        $pinnedUntil = null;
+        switch ($duration) {
+            case '1_day':
+                $pinnedUntil = now()->addDay();
+                break;
+            case '7_days':
+                $pinnedUntil = now()->addDays(7);
+                break;
+            case '30_days':
+                $pinnedUntil = now()->addDays(30);
+                break;
+            case 'indefinite':
+                $pinnedUntil = null;
+                break;
+        }
+
+        $product->update([
+            'is_pinned' => ($pinType === 'homepage' && !$pinnedUntil),
+            'pin_type' => $pinType,
+            'pinned_until' => $pinnedUntil,
+        ]);
+
+        $durationLabel = $duration === 'indefinite' ? 'indefinitely' : "for " . str_replace('_', ' ', $duration);
+        $typeLabel = $pinType === 'homepage' ? 'Homepage' : 'Category page';
+
+        return back()->with('success', "Product '{$product->name}' successfully pinned to {$typeLabel} {$durationLabel}.");
     }
 }

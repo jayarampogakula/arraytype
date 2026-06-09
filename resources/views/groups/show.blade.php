@@ -4,12 +4,30 @@
         <div class="glass-panel rounded-xl p-6">
             <div class="flex items-start justify-between">
                 <div class="flex items-center space-x-4">
+                    @php
+                        $icon = match($group->slug) {
+                            'discussions' => '💬',
+                            'showcases' => '🚀',
+                            'questions' => '❓',
+                            'tutorials' => '📚',
+                            default => '👥'
+                        };
+                        $gradient = match($group->slug) {
+                            'discussions' => 'from-blue-600 to-indigo-600 shadow-blue-500/10',
+                            'showcases' => 'from-emerald-500 to-teal-500 shadow-emerald-500/10',
+                            'questions' => 'from-purple-600 to-pink-600 shadow-purple-500/10',
+                            'tutorials' => 'from-amber-500 to-orange-500 shadow-amber-500/10',
+                            default => 'from-ai-primary to-ai-accent'
+                        };
+                    @endphp
                     <div
-                        class="h-16 w-16 rounded-xl bg-gradient-to-br from-ai-primary to-ai-accent flex items-center justify-center text-white font-bold text-2xl flex-shrink-0">
-                        {{ substr($group->name, 0, 1) }}
+                        class="h-16 w-16 rounded-xl bg-gradient-to-br {{ $gradient }} flex items-center justify-center text-white font-bold text-3xl flex-shrink-0 shadow-lg">
+                        {{ $icon }}
                     </div>
                     <div>
-                        <h1 class="text-2xl font-bold text-gray-100">{{ $group->name }}</h1>
+                        <h1 class="text-2xl font-bold text-gray-100 flex items-center gap-2">
+                            {{ $group->name }}
+                        </h1>
                         <p class="text-gray-400 mt-1">{{ $group->description ?? 'No description.' }}</p>
                         <div class="flex items-center space-x-4 mt-2 text-sm text-gray-500">
                             <span>{{ $group->members_count }} Members</span>
@@ -62,7 +80,7 @@
         <div class="mt-8">
             <h3 class="text-lg font-bold text-gray-100 mb-4">Community Discussion</h3>
             @if($isMember)
-                @include('feed.partials.create-post', ['group' => $group])
+                @include('feed.partials.create-post', ['group' => $group, 'defaultPostType' => ($group->slug === 'questions' ? 'ask' : 'text')])
             @endif
             @include('feed.partials.post-list', ['posts' => $posts])
         </div>

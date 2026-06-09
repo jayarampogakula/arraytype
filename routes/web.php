@@ -71,6 +71,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/jobs/create', [JobController::class, 'create'])->name('jobs.create');
     Route::post('/jobs', [JobController::class, 'store'])->name('jobs.store');
+    Route::post('/jobs/{job}/apply', [JobController::class, 'apply'])->name('jobs.apply');
 
     Route::get('/news/create', [NewsController::class, 'create'])->name('news.create');
     Route::post('/news', [NewsController::class, 'store'])->name('news.store');
@@ -81,6 +82,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Premium & Promotion Routes
+    Route::get('/premium', [\App\Http\Controllers\PremiumController::class, 'index'])->name('premium.index');
+    Route::post('/premium/upgrade', [\App\Http\Controllers\PremiumController::class, 'upgrade'])->name('premium.upgrade');
+    Route::post('/premium/promote', [\App\Http\Controllers\PremiumController::class, 'promote'])->name('premium.promote');
+    Route::post('/premium/promote-job', [\App\Http\Controllers\PremiumController::class, 'promoteJob'])->name('premium.promote-job');
+    Route::post('/products/{product}/cta', [\App\Http\Controllers\PremiumController::class, 'updateCta'])->name('products.update-cta');
+    Route::get('/products/{product}/click', [\App\Http\Controllers\ProductController::class, 'recordClick'])->name('products.click');
 
     // Admin Routes
     Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {

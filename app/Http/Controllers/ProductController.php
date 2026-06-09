@@ -15,20 +15,36 @@ class ProductController extends Controller
         $categories = ProductCategory::orderBy('name')->get();
         $activeCategory = null;
 
+        if ($request->filled('category')) {
+            $activeCategory = ProductCategory::where('slug', $request->input('category'))->first();
+        }
+
         $now = now();
+        $activeCategoryId = $activeCategory ? $activeCategory->id : 0;
+
         $query = Product::with(['category', 'creator'])
             ->withCount(['votes', 'comments'])
             ->where('status', 'approved')
             ->selectRaw('products.*, (
                 (select count(*) from product_votes where product_votes.product_id = products.id) * 10 
                 + (select count(*) from product_comments where product_comments.product_id = products.id) * 5 
-                + (case when is_pinned = 1 then 100000 else 0 end)
+                + (case 
+                    when (is_pinned = 1 or (pin_type = "homepage" and pinned_until >= ?)) then 100000 
+                    when (pin_type = "category" and pinned_until >= ? and ? > 0 and category_id = ?) then 100000 
+                    else 0 
+                  end)
                 + (case when featured_until >= ? then 50000 else 0 end)
                 - (timestampdiff(HOUR, created_at, ?) * 2)
-            ) as ranking_score', [$now, $now]);
+            ) as ranking_score', [
+                $now, 
+                $now, 
+                $activeCategoryId, 
+                $activeCategoryId, 
+                $now, 
+                $now
+            ]);
 
-        if ($request->filled('category')) {
-            $activeCategory = ProductCategory::where('slug', $request->input('category'))->firstOrFail();
+        if ($activeCategory) {
             $query->where('category_id', $activeCategory->id);
         }
 
@@ -70,13 +86,16 @@ class ProductController extends Controller
         ]);
 
         $validated['user_id'] = auth()->id();
-        $validated['status'] = 'pending';
+        $validated['status'] = auth()->user()->isPremium() ? 'approved' : 'pending';
         $validated['launch_date'] = $validated['launch_date'] ?? now()->toDateString();
 
-        Product::create($validated);
+        $product = Product::create($validated);
 
-        return redirect()->route('products.index')
-            ->with('success', 'Product submitted! An admin will review it shortly.');
+        $message = auth()->user()->isPremium() 
+            ? 'Product submitted and auto-approved because you are a Premium user! 🚀' 
+            : 'Product submitted! An admin will review it shortly.';
+
+        return redirect()->route('products.index')->with('success', $message);
     }
 
     public function show(Product $product)
@@ -84,6 +103,9 @@ class ProductController extends Controller
         if ($product->status !== 'approved' && !($this->canViewPending($product))) {
             abort(404);
         }
+
+        // Increment view count
+        $product->increment('views_count');
 
         $product->load(['category', 'creator', 'comments.user'])
             ->loadCount(['votes', 'comments']);
@@ -96,6 +118,14 @@ class ProductController extends Controller
             ->get();
 
         return view('products.show', compact('product', 'relatedProducts'));
+    }
+
+    public function recordClick(Product $product)
+    {
+        // Increment click count
+        $product->increment('clicks_count');
+
+        return redirect($product->website_url);
     }
 
     public function vote(Product $product)

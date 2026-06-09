@@ -7,7 +7,7 @@
                 class="text-base font-semibold text-gray-900 dark:text-gray-100 p-4 border-b border-gray-200 dark:border-white/10">
                 Manage my network</h2>
             <div class="py-2">
-                <a href="#"
+                <a href="#" @click.prevent="$dispatch('switch-tab', 'connections')"
                     class="flex items-center justify-between px-4 py-2 hover:bg-gray-100 dark:hover:bg-white/5 transition group">
                     <div
                         class="flex items-center gap-3 text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200">
@@ -19,15 +19,39 @@
                     </div>
                     <span class="text-sm text-gray-500">{{ $connectionsCount }}</span>
                 </a>
-                <a href="#"
+                <a href="#" @click.prevent="$dispatch('switch-tab', 'following')"
                     class="flex items-center justify-between px-4 py-2 hover:bg-gray-100 dark:hover:bg-white/5 transition group">
                     <div
                         class="flex items-center gap-3 text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                         </svg>
-                        <span class="text-sm font-medium">Following & followers</span>
+                        <span class="text-sm font-medium">Following</span>
+                    </div>
+                    <span class="text-sm text-gray-500">{{ $followingCount }}</span>
+                </a>
+                <a href="#" @click.prevent="$dispatch('switch-tab', 'followers')"
+                    class="flex items-center justify-between px-4 py-2 hover:bg-gray-100 dark:hover:bg-white/5 transition group">
+                    <div
+                        class="flex items-center gap-3 text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        <span class="text-sm font-medium">Followers</span>
+                    </div>
+                    <span class="text-sm text-gray-500">{{ $followersCount }}</span>
+                </a>
+                <a href="{{ route('messages.index') }}"
+                    class="flex items-center justify-between px-4 py-2 hover:bg-gray-100 dark:hover:bg-white/5 transition group">
+                    <div
+                        class="flex items-center gap-3 text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        </svg>
+                        <span class="text-sm font-medium">Messages</span>
                     </div>
                 </a>
                 <a href="{{ route('groups.index') }}"
@@ -46,16 +70,19 @@
     </x-slot>
 
     <!-- Main Content -->
-    <div x-data="{ activeTab: 'grow' }" class="space-y-4">
+    <div x-data="{ activeTab: 'grow' }" x-on:switch-tab.window="activeTab = $event.detail" class="space-y-4">
 
         <!-- Tabs -->
         <div class="glass-panel rounded-xl bg-white dark:bg-[#1b1f23] shadow-sm border border-gray-200 dark:border-white/10 px-4 pt-2 mb-4">
             <div class="flex gap-6 border-b border-gray-200 dark:border-white/10">
                 <button @click="activeTab = 'grow'" 
-                    :class="activeTab === 'grow' ? 'pb-2 text-sm font-bold text-ai-primary border-b-2 border-ai-primary' : 'pb-2 text-sm font-semibold text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition'">Grow</button>
-                <button @click="activeTab = 'catch_up'" 
-                    :class="activeTab === 'catch_up' ? 'pb-2 text-sm font-bold text-ai-primary border-b-2 border-ai-primary' : 'pb-2 text-sm font-semibold text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition'">Catch
-                    up</button>
+                    :class="activeTab === 'grow' ? 'pb-2 text-sm font-bold text-ai-primary border-b-2 border-ai-primary' : 'pb-2 text-sm font-semibold text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition'">Suggestions</button>
+                <button @click="activeTab = 'connections'" 
+                    :class="activeTab === 'connections' ? 'pb-2 text-sm font-bold text-ai-primary border-b-2 border-ai-primary' : 'pb-2 text-sm font-semibold text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition'">My Connections ({{ $connectionsCount }})</button>
+                <button @click="activeTab = 'following'" 
+                    :class="activeTab === 'following' ? 'pb-2 text-sm font-bold text-ai-primary border-b-2 border-ai-primary' : 'pb-2 text-sm font-semibold text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition'">Following ({{ $followingCount }})</button>
+                <button @click="activeTab = 'followers'" 
+                    :class="activeTab === 'followers' ? 'pb-2 text-sm font-bold text-ai-primary border-b-2 border-ai-primary' : 'pb-2 text-sm font-semibold text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition'">Followers ({{ $followersCount }})</button>
             </div>
         </div>
 
@@ -185,7 +212,7 @@
                             </div>
 
                             <div class="mt-4">
-                                <form action="{{ route('network.connect', ['user' => $suggestedUser->id]) }}" method="POST">
+                                <form action="{{ route('network.connect', $suggestedUser) }}" method="POST">
                                     @csrf
                                     <button type="submit"
                                         class="w-full font-semibold text-ai-primary border border-ai-primary hover:bg-blue-50 dark:hover:bg-ai-primary/10 hover:border-blue-600 px-4 py-1.5 rounded-full transition text-sm flex items-center justify-center gap-1">
@@ -206,16 +233,157 @@
             </div>
         </div>
 
-        <!-- Catch Up Content -->
-        <div x-show="activeTab === 'catch_up'" style="display: none;">
-            <div class="glass-panel rounded-xl bg-white dark:bg-[#1b1f23] shadow-sm border border-gray-200 dark:border-white/10 p-8 text-center">
-                <div class="text-gray-400 dark:text-gray-500 mb-4">
-                    <svg class="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                    </svg>
+        <!-- Connections Content -->
+        <div x-show="activeTab === 'connections'" style="display: none;" class="space-y-4">
+            <div class="glass-panel rounded-xl bg-white dark:bg-[#1b1f23] shadow-sm border border-gray-200 dark:border-white/10 p-6">
+                <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4">Your Connections</h2>
+                
+                <div class="divide-y divide-gray-200 dark:divide-white/5">
+                    @forelse($connections as $connection)
+                        <div class="py-4 flex items-center justify-between group last:pb-0">
+                            <div class="flex items-center gap-4">
+                                <a href="{{ route('users.show', ['user' => $connection->username ?? $connection->id]) }}">
+                                    <div class="h-14 w-14 rounded-full bg-gray-200 dark:bg-gray-700 border border-gray-300 dark:border-white/10 overflow-hidden flex items-center justify-center text-lg font-bold text-gray-400">
+                                        {{ substr($connection->name, 0, 1) }}
+                                    </div>
+                                </a>
+                                <div>
+                                    <a href="{{ route('users.show', ['user' => $connection->username ?? $connection->id]) }}"
+                                        class="font-bold text-gray-900 dark:text-gray-100 hover:text-ai-primary hover:underline text-sm sm:text-base">{{ $connection->name }}</a>
+                                    <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                                        {{ $connection->profile->bio ?? 'AI Enthusiast & Developer' }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div>
+                                <form action="{{ route('messages.start', $connection) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="font-semibold text-ai-primary border border-ai-primary hover:bg-blue-50 dark:hover:bg-ai-primary/10 hover:border-blue-600 px-4 py-1.5 rounded-full transition text-sm flex items-center gap-1.5">
+                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                        </svg>
+                                        Message
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="py-8 text-center text-gray-500 text-sm">
+                            You haven't connected with anyone yet. Browse suggestions to expand your network!
+                        </div>
+                    @endforelse
                 </div>
-                <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100">You're all caught up!</h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Check back later for recent updates from your network.</p>
+            </div>
+        </div>
+
+        <!-- Following Content -->
+        <div x-show="activeTab === 'following'" style="display: none;" class="space-y-4">
+            <div class="glass-panel rounded-xl bg-white dark:bg-[#1b1f23] shadow-sm border border-gray-200 dark:border-white/10 p-6">
+                <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4">People you follow</h2>
+                <div class="divide-y divide-gray-200 dark:divide-white/5">
+                    @forelse($following as $followed)
+                        <div class="py-4 flex items-center justify-between group last:pb-0">
+                            <div class="flex items-center gap-4">
+                                <a href="{{ route('users.show', ['user' => $followed->username ?? $followed->id]) }}">
+                                    <div class="h-14 w-14 rounded-full bg-gray-200 dark:bg-gray-700 border border-gray-300 dark:border-white/10 overflow-hidden flex items-center justify-center text-lg font-bold text-gray-400">
+                                        {{ substr($followed->name, 0, 1) }}
+                                    </div>
+                                </a>
+                                <div>
+                                    <a href="{{ route('users.show', ['user' => $followed->username ?? $followed->id]) }}"
+                                        class="font-bold text-gray-900 dark:text-gray-100 hover:text-ai-primary hover:underline text-sm sm:text-base">{{ $followed->name }}</a>
+                                    <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                                        {{ $followed->profile->bio ?? 'AI Enthusiast & Developer' }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                @if($connections->contains('id', $followed->id))
+                                    <form action="{{ route('messages.start', $followed) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="font-semibold text-ai-primary border border-ai-primary hover:bg-blue-50 dark:hover:bg-ai-primary/10 hover:border-blue-600 px-4 py-1.5 rounded-full transition text-sm flex items-center gap-1.5">
+                                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                            </svg>
+                                            Message
+                                        </button>
+                                    </form>
+                                @endif
+                                <form action="{{ route('users.unfollow', $followed) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="font-semibold text-gray-500 bg-gray-100 hover:bg-gray-200 dark:bg-white/10 dark:hover:bg-white/20 px-4 py-1.5 rounded-full transition text-sm">
+                                        Unfollow
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="py-8 text-center text-gray-500 text-sm">
+                            You aren't following anyone yet.
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+        </div>
+
+        <!-- Followers Content -->
+        <div x-show="activeTab === 'followers'" style="display: none;" class="space-y-4">
+            <div class="glass-panel rounded-xl bg-white dark:bg-[#1b1f23] shadow-sm border border-gray-200 dark:border-white/10 p-6">
+                <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4">Your followers</h2>
+                <div class="divide-y divide-gray-200 dark:divide-white/5">
+                    @forelse($followers as $follower)
+                        <div class="py-4 flex items-center justify-between group last:pb-0">
+                            <div class="flex items-center gap-4">
+                                <a href="{{ route('users.show', ['user' => $follower->username ?? $follower->id]) }}">
+                                    <div class="h-14 w-14 rounded-full bg-gray-200 dark:bg-gray-700 border border-gray-300 dark:border-white/10 overflow-hidden flex items-center justify-center text-lg font-bold text-gray-400">
+                                        {{ substr($follower->name, 0, 1) }}
+                                    </div>
+                                </a>
+                                <div>
+                                    <a href="{{ route('users.show', ['user' => $follower->username ?? $follower->id]) }}"
+                                        class="font-bold text-gray-900 dark:text-gray-100 hover:text-ai-primary hover:underline text-sm sm:text-base">{{ $follower->name }}</a>
+                                    <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                                        {{ $follower->profile->bio ?? 'AI Enthusiast & Developer' }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                @if($connections->contains('id', $follower->id))
+                                    <form action="{{ route('messages.start', $follower) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="font-semibold text-ai-primary border border-ai-primary hover:bg-blue-50 dark:hover:bg-ai-primary/10 hover:border-blue-600 px-4 py-1.5 rounded-full transition text-sm flex items-center gap-1.5">
+                                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                            </svg>
+                                            Message
+                                        </button>
+                                    </form>
+                                @endif
+                                @if($following->contains('id', $follower->id))
+                                    <form action="{{ route('users.unfollow', $follower) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="font-semibold text-gray-500 bg-gray-100 hover:bg-gray-200 dark:bg-white/10 dark:hover:bg-white/20 px-4 py-1.5 rounded-full transition text-sm">
+                                            Following
+                                        </button>
+                                    </form>
+                                @else
+                                    <form action="{{ route('users.follow', $follower) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="font-semibold text-ai-primary border border-ai-primary hover:bg-blue-50 dark:hover:bg-ai-primary/10 hover:border-blue-600 px-4 py-1.5 rounded-full transition text-sm">
+                                            Follow back
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
+                        </div>
+                    @empty
+                        <div class="py-8 text-center text-gray-500 text-sm">
+                            You don't have any followers yet.
+                        </div>
+                    @endforelse
+                </div>
             </div>
         </div>
 

@@ -21,17 +21,14 @@
                     <x-nav-link :href="route('groups.index')" :active="request()->routeIs('groups.*')">
                         {{ __('Groups') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('jobs.index')" :active="request()->routeIs('jobs.*')">
-                        {{ __('Jobs') }}
-                    </x-nav-link>
                     <x-nav-link :href="route('news.index')" :active="request()->routeIs('news.*')">
                         {{ __('News') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('jobs.index')" :active="request()->routeIs('jobs.*')">
+                        {{ __('Jobs') }}
+                    </x-nav-link>
                     <x-nav-link :href="route('network.index')" :active="request()->routeIs('network.*')">
                         {{ __('Network') }}
-                    </x-nav-link>
-                    <x-nav-link :href="route('messages.index')" :active="request()->routeIs('messages.*')">
-                        {{ __('Messaging') }}
                     </x-nav-link>
                 </div>
             </div>
@@ -97,6 +94,10 @@
                                 {{ __('View Profile') }}
                             </x-dropdown-link>
 
+                            <x-dropdown-link :href="route('premium.index')" class="text-purple-400 font-bold">
+                                💎 {{ __('Go Premium / Promote') }}
+                            </x-dropdown-link>
+
                             <x-dropdown-link :href="route('profile.edit')">
                                 {{ __('Edit Profile') }}
                             </x-dropdown-link>
@@ -154,17 +155,17 @@
                 <x-responsive-nav-link :href="route('products.index')" :active="request()->routeIs('products.*')">
                     {{ __('Products') }}
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('jobs.index')" :active="request()->routeIs('jobs.*')">
-                    {{ __('Jobs') }}
+                <x-responsive-nav-link :href="route('groups.index')" :active="request()->routeIs('groups.*')">
+                    {{ __('Groups') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('news.index')" :active="request()->routeIs('news.*')">
                     {{ __('News') }}
                 </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('jobs.index')" :active="request()->routeIs('jobs.*')">
+                    {{ __('Jobs') }}
+                </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('network.index')" :active="request()->routeIs('network.*')">
                     {{ __('Network') }}
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('messages.index')" :active="request()->routeIs('messages.*')">
-                    {{ __('Messaging') }}
                 </x-responsive-nav-link>
             </div>
 
@@ -179,6 +180,10 @@
                     <div class="mt-3 space-y-1">
                         <x-responsive-nav-link :href="route('users.show', Auth::user())">
                             {{ __('View Profile') }}
+                        </x-responsive-nav-link>
+
+                        <x-responsive-nav-link :href="route('premium.index')" class="text-purple-400 font-bold">
+                            💎 {{ __('Go Premium / Promote') }}
                         </x-responsive-nav-link>
 
                         <x-responsive-nav-link :href="route('profile.edit')">

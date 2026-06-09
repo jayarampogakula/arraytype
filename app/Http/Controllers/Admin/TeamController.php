@@ -10,19 +10,17 @@ use Illuminate\Validation\Rules;
 
 class TeamController extends Controller
 {
-    public function __construct()
+    private function checkSuperAdmin()
     {
-        // Enforce Super Admin check for all controller actions
-        $this->middleware(function ($request, $next) {
-            if (!auth()->check() || auth()->user()->admin_role !== 'super_admin') {
-                abort(403, 'Access denied. Only Super Administrators can manage team members.');
-            }
-            return $next($request);
-        });
+        if (!auth()->check() || auth()->user()->admin_role !== 'super_admin') {
+            abort(403, 'Access denied. Only Super Administrators can manage team members.');
+        }
     }
 
     public function index()
     {
+        $this->checkSuperAdmin();
+
         $teamMembers = User::where('is_admin', true)
             ->whereNotNull('admin_role')
             ->orderByRaw("CASE admin_role 
@@ -37,6 +35,8 @@ class TeamController extends Controller
 
     public function store(Request $request)
     {
+        $this->checkSuperAdmin();
+
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
@@ -76,6 +76,8 @@ class TeamController extends Controller
 
     public function update(Request $request, User $team)
     {
+        $this->checkSuperAdmin();
+
         $request->validate([
             'admin_role' => ['required', 'in:super_admin,moderator,editor'],
         ]);
@@ -95,6 +97,8 @@ class TeamController extends Controller
 
     public function destroy(User $team)
     {
+        $this->checkSuperAdmin();
+
         // Prevent deleting oneself
         if (auth()->id() === $team->id) {
             return back()->with('error', 'You cannot remove yourself from the admin team.');

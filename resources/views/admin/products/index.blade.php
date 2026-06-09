@@ -77,9 +77,13 @@
                         <div class="min-w-0 flex-1">
                             <div class="flex items-center gap-2 flex-wrap">
                                 <h3 class="text-lg font-bold text-white">{{ $product->name }}</h3>
-                                @if($product->is_pinned)
+                                @if($product->isPinnedHomepage())
                                     <span class="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase flex items-center gap-1">
-                                        📌 Pinned
+                                        📌 Home Pinned {{ $product->pinned_until ? '(' . $product->pinned_until->diffForHumans() . ')' : '(indefinite)' }}
+                                    </span>
+                                @elseif($product->isPinnedCategory())
+                                    <span class="bg-purple-500/10 text-purple-400 border border-purple-500/20 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase flex items-center gap-1">
+                                        📌 Cat Pinned {{ $product->pinned_until ? '(' . $product->pinned_until->diffForHumans() . ')' : '(indefinite)' }}
                                     </span>
                                 @endif
                                 @if($product->featured_until && $product->featured_until->isFuture())
@@ -97,12 +101,24 @@
                                 <span>Launched {{ $product->created_at->format('M d, Y') }}</span>
                             </div>
                         </div>
-                        <div class="flex gap-2 flex-shrink-0">
-                            <form method="POST" action="{{ route('admin.products.toggle-pin', $product) }}">
+                        <div class="flex gap-2 flex-shrink-0 items-center">
+                            <form method="POST" action="{{ route('admin.products.toggle-pin', $product) }}" class="flex items-center gap-1.5 bg-black/30 p-1.5 rounded-xl border border-white/5">
                                 @csrf
-                                <button type="submit"
-                                    class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 {{ $product->is_pinned ? 'bg-indigo-600 text-white hover:bg-indigo-700' : 'bg-white/5 text-gray-300 hover:bg-white/10 border border-white/10' }}">
-                                    {{ $product->is_pinned ? '📌 Unpin from 1st Page' : '📌 Pin to 1st Page (Premium)' }}
+                                <select name="pin_type" class="bg-black/50 border border-white/10 rounded-lg text-[11px] text-gray-300 py-1 px-1.5 focus:outline-none focus:border-indigo-500">
+                                    <option value="none" {{ $product->pin_type === 'none' ? 'selected' : '' }}>No Pin</option>
+                                    <option value="homepage" {{ $product->pin_type === 'homepage' ? 'selected' : '' }}>Homepage</option>
+                                    <option value="category" {{ $product->pin_type === 'category' ? 'selected' : '' }}>Category</option>
+                                </select>
+                                
+                                <select name="duration" class="bg-black/50 border border-white/10 rounded-lg text-[11px] text-gray-300 py-1 px-1.5 focus:outline-none focus:border-indigo-500">
+                                    <option value="1_day" {{ ($product->pinned_until && $product->pinned_until->diffInHours(now()) <= 24) ? 'selected' : '' }}>1 Day</option>
+                                    <option value="7_days" {{ ($product->pinned_until && $product->pinned_until->diffInDays(now()) > 1 && $product->pinned_until->diffInDays(now()) <= 7) ? 'selected' : '' }}>7 Days</option>
+                                    <option value="30_days" {{ ($product->pinned_until && $product->pinned_until->diffInDays(now()) > 7) ? 'selected' : '' }}>30 Days</option>
+                                    <option value="indefinite" {{ ($product->pin_type !== 'none' && !$product->pinned_until) ? 'selected' : '' }}>Indefinite</option>
+                                </select>
+
+                                <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-1 px-2.5 rounded-lg text-[11px] transition">
+                                    Pin
                                 </button>
                             </form>
                             <form method="POST" action="{{ route('admin.products.reject', $product) }}">

@@ -23,9 +23,15 @@
             <!-- Left Side: Main Content (3/4) -->
             <div class="lg:col-span-3 space-y-6">
                 <!-- Header -->
-                <div class="flex items-center gap-3 mb-2">
-                    <div class="h-8 w-8 bg-ai-primary rounded-full flex items-center justify-center text-white font-black text-lg shadow-sm">P</div>
-                    <h1 class="text-[22px] font-bold text-gray-900 dark:text-white tracking-tight">Best of ArrayType <span class="text-gray-400 font-normal ml-1">| {{ $currentDate->format('F d, Y') }}</span></h1>
+                <div class="flex items-center justify-between gap-4 mb-2 flex-wrap">
+                    <div class="flex items-center gap-3">
+                        <div class="h-8 w-8 bg-ai-primary rounded-full flex items-center justify-center text-white font-black text-lg shadow-sm">P</div>
+                        <h1 class="text-[22px] font-bold text-gray-900 dark:text-white tracking-tight">Best of ArrayType <span class="text-gray-400 font-normal ml-1">| {{ $currentDate->format('F d, Y') }}</span></h1>
+                    </div>
+                    <a href="{{ route('products.create') }}" class="flex items-center gap-1.5 bg-ai-primary hover:bg-ai-primary/95 text-white font-semibold text-[13px] px-4 py-2 rounded-xl transition-all shadow-sm shadow-blue-500/10">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" /></svg>
+                        Submit Product
+                    </a>
                 </div>
 
                 <!-- Tabs -->
@@ -59,7 +65,11 @@
                 <!-- Product List -->
                 <div class="space-y-0 pt-2">
                     @forelse($products as $product)
-                        <div class="group relative bg-white dark:bg-ai-bg hover:bg-gray-50 dark:hover:bg-white/[0.02] p-4 rounded-xl transition-all duration-200 cursor-pointer border border-transparent hover:border-gray-100 dark:hover:border-white/5">
+                        @php
+                            $isPinned = $product->isPinnedHomepage() || $product->isPinnedCategory();
+                            $isPremiumMaker = $product->creator?->isPremium();
+                        @endphp
+                        <div class="group relative bg-white dark:bg-ai-bg hover:bg-gray-50 dark:hover:bg-white/[0.02] p-4 rounded-xl transition-all duration-200 cursor-pointer border {{ $isPinned ? 'border-indigo-500/25 bg-indigo-500/[0.01] shadow-sm shadow-indigo-500/5' : 'border-transparent' }} hover:border-gray-100 dark:hover:border-white/5">
                             <div class="flex items-start gap-4">
                                 <!-- Product Logo -->
                                 <a href="{{ route('products.show', $product) }}" class="h-[60px] w-[60px] rounded-xl bg-white border border-gray-100 dark:border-white/5 flex items-center justify-center overflow-hidden flex-shrink-0">
@@ -72,10 +82,20 @@
 
                                 <!-- Product Info -->
                                 <div class="flex-grow min-w-0 pt-0.5">
-                                    <div class="flex items-center gap-2">
+                                    <div class="flex items-center gap-2 flex-wrap">
                                         <a href="{{ route('products.show', $product) }}" class="text-[15px] font-bold text-gray-900 dark:text-white hover:text-ai-primary transition-colors truncate mb-0.5">
                                             {{ $product->name }}
                                         </a>
+                                        @if($isPinned)
+                                            <span class="text-[10px] text-indigo-500 dark:text-indigo-400 font-medium lowercase tracking-normal">
+                                                promotion
+                                            </span>
+                                        @endif
+                                        @if($isPremiumMaker)
+                                            <span class="text-[9px] bg-amber-500/15 text-amber-400 font-extrabold px-1.5 py-0.5 rounded border border-amber-500/20 uppercase tracking-wider" title="Premium Creator">
+                                                👑 PRO MAKER
+                                            </span>
+                                        @endif
                                     </div>
                                     <p class="text-[13px] text-gray-600 dark:text-gray-400 line-clamp-1 mb-1">{{ $product->tagline }}</p>
                                     
@@ -127,7 +147,16 @@
             </div>
 
             <!-- Right Side: Sidebar (1/4) -->
-            <div class="lg:col-span-1 space-y-10 pt-2 lg:pl-4">
+            <div class="lg:col-span-1 space-y-8 pt-2 lg:pl-4">
+                <!-- Launch Product Card -->
+                <div class="glass-panel border border-gray-200 dark:border-white/10 rounded-xl p-4 space-y-3 bg-gradient-to-br from-ai-primary/5 to-ai-accent/5 shadow-sm">
+                    <h3 class="text-sm font-bold text-gray-900 dark:text-white">Have an AI product?</h3>
+                    <p class="text-[12px] text-gray-500 dark:text-gray-400 leading-relaxed">Launch it on ArrayType to get discovered by thousands of AI builders, creators, and enthusiasts.</p>
+                    <a href="{{ route('products.create') }}" class="block text-center bg-ai-primary hover:bg-ai-primary/90 text-white font-semibold text-[13px] py-2 rounded-xl transition shadow-sm">
+                        Submit Product
+                    </a>
+                </div>
+
                 <!-- Launch Archive -->
                 <div class="space-y-4">
                     <h3 class="text-[13px] text-gray-800 dark:text-gray-200 font-normal">Launch Archive</h3>

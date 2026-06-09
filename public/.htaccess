@@ -37,7 +37,7 @@
 
 # --- Block SQL Injection patterns ---
 <IfModule mod_rewrite.c>
-    RewriteCond %{QUERY_STRING} (union|select|insert|drop|delete|update|create|alter|exec|execute|xp_|char|nchar|varchar|cast|convert|declare|script|javascript|vbscript|onload|onerror|onclick|expression|alert|prompt|confirm) [NC]
+    RewriteCond %{QUERY_STRING} (union|select|insert|drop|delete|update|create|alter|exec|execute|xp_|char|nchar|varchar|cast|convert|declare|script|javascript|vbscript|onload|onerror|onclick|expression|alert|confirm) [NC]
     RewriteRule .* - [F,L]
 
     # Block common attack paths
